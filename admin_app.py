@@ -137,7 +137,14 @@ def _ai_check_dialog(row_dict: dict):
 def page_admin():
     if not st.session_state.get("admin_authed"):
         st.header("관리자 대시보드")
-        pw = st.text_input("관리자 비밀번호", type="password")
+        with st.container(key="login_box"):
+            st.markdown("**관리자 비밀번호를 입력해주세요**")
+            pw = st.text_input("관리자 비밀번호", type="password", placeholder="비밀번호 입력",
+                                label_visibility="collapsed")
+        theme.inject_css(
+            f'.st-key-login_box {{ background:#fff; border:1px solid {config.BRAND["primary_light"]}; '
+            "border-radius:10px; padding:16px 18px; max-width:360px; margin-top:8px; }"
+        )
         if pw != st.secrets.get("app", {}).get("admin_password", ""):
             if pw:
                 st.error("비밀번호가 올바르지 않습니다.")
