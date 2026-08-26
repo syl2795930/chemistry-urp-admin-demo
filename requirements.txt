@@ -1,0 +1,9 @@
+streamlit>=1.37
+pandas>=2.0
+gspread>=6.1
+google-auth>=2.30
+google-api-python-client>=2.130
+reportlab>=4.0
+pypdf>=5.0
+openpyxl>=3.1
+Pillow>=10.0
