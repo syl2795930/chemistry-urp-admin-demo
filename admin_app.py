@@ -224,18 +224,26 @@ def page_admin():
         # 실제 여백에는 영향이 없었음. 접기버튼을 이미 숨겼으니, 이 안쪽 콘텐츠 div의 padding-top을
         # 직접 덮어써야 실제로 움직인다.
         'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] { '
-        "padding-top:31px !important; padding-left:0.6rem !important; padding-right:0.6rem !important; }"
+        "padding-top:31px !important; padding-left:0.4rem !important; padding-right:0.4rem !important; }"
         'section[data-testid="stSidebar"] > div:first-child { padding-top:0 !important; }'
+        # 스크린샷으로 확인해보니, 사이드바 안쪽 콘텐츠 div의 padding-top을 덮어써도 실제 화면엔
+        # 반영이 안 됨(제목이 여전히 원래 위치보다 33px 아래에 그대로 있었음) — Streamlit이
+        # 그 값을 자체적으로 다시 강제 지정하는 것으로 보임. 그래서 그 div의 padding과 씨름하는 대신,
+        # 그 안의 콘텐츠 블록 전체(제목+안내문구+메뉴 전부)를 하나의 단위로 통째로 33px 위로
+        # 밀어 올린다. 안에 있는 요소들끼리의 간격은 그대로 유지된 채 블록 전체만 이동하므로,
+        # 제목 위치만 옮기는 것보다 안전하다(제목과 메뉴 사이 간격이 벌어지는 부작용이 없음).
+        'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div:first-child { '
+        "position:relative !important; top:-33px !important; }"
         # 제목("2027-WURF")과 캡션도 메뉴 버튼과 같은 기준(왼쪽)으로 맞춘다.
         # (가운데 정렬은 메뉴 글자 길이가 제각각이라 시작선이 들쭉날쭉해 보여서, 왼쪽 정렬로 되돌림)
         # 메뉴 버튼은 안쪽에 12px 패딩이 있어서 글자가 그만큼 더 안쪽에서 시작하는데,
         # 제목/캡션은 그 여백이 없어 시작 지점이 어긋나 보였다 — 똑같이 맞춰준다.
         f'section[data-testid="stSidebar"] h4 {{ text-align:left !important; '
-        "padding:0 0 0 12px !important; margin:0 0 6px 0 !important; "
+        "padding:0 0 0 8px !important; margin:0 0 6px 0 !important; "
         f'color:{config.BRAND["primary_dark"]} !important; '
         "font-size:1.25rem !important; line-height:1.2 !important; }"
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
-        "white-space:nowrap; text-align:left !important; padding-left:12px !important; }"
+        "white-space:nowrap; text-align:left !important; padding-left:8px !important; }"
         f'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] strong {{'
         f'color:{config.BRAND["primary"]} !important; font-weight:700 !important; }}'
         # 이번엔 요청대로 사이드바를 고정(항상 펼침)으로 두기 위해 접기 버튼을 숨긴다.
@@ -248,7 +256,8 @@ def page_admin():
         '.st-key-admin_sidebar_nav div[data-testid="stButton"] { margin-bottom:6px; }'
         '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button {'
         "text-align:left !important; justify-content:flex-start !important; "
-        "border-radius:8px !important; font-size:13px !important; padding:8px 12px !important; }"
+        "border-radius:8px !important; font-size:12.5px !important; letter-spacing:-0.2px !important; "
+        "padding:8px 8px !important; }"
         '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button div, '
         '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button p {'
         "justify-content:flex-start !important; text-align:left !important; width:100% !important; }"
