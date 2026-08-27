@@ -216,8 +216,8 @@ def page_admin():
         f'section[data-testid="stSidebar"] {{ background:{config.BRAND["page_bg"]}; '
         f'border-right:1px solid #F1E1EC; '
         "width:190px !important; min-width:190px !important; max-width:190px !important; }"
-        # 위쪽/왼쪽 여백을 좀 더 좁혀서 공간을 아낀다.
-        'section[data-testid="stSidebar"] > div:first-child { padding-top:46px !important; }'
+        # 위쪽/왼쪽 여백을 좀 더 좁혀서 공간을 아낀다. (기존 46px의 2/3 수준인 31px로 축소)
+        'section[data-testid="stSidebar"] > div:first-child { padding-top:31px !important; }'
         'section[data-testid="stSidebar"] > div { padding-top:0.8rem; padding-left:0.6rem !important; '
         "padding-right:0.6rem !important; }"
         # 제목("2027-WURF")과 캡션도 메뉴 버튼과 같은 기준(왼쪽)으로 맞춘다.
@@ -227,8 +227,7 @@ def page_admin():
         f'section[data-testid="stSidebar"] h4 {{ text-align:left !important; '
         "padding:0 0 0 12px !important; margin:0 0 6px 0 !important; "
         f'color:{config.BRAND["primary_dark"]} !important; '
-        "font-size:1.25rem !important; line-height:1.2 !important; "
-        "position:relative !important; top:-24px !important; }"
+        "font-size:1.25rem !important; line-height:1.2 !important; }"
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
         "white-space:nowrap; text-align:left !important; padding-left:12px !important; }"
         f'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] strong {{'
@@ -257,7 +256,8 @@ def page_admin():
         f'.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button[kind="primary"] p {{'
         f'color:{config.BRAND["primary"]} !important; font-weight:700 !important; }}'
         # 본문(오른쪽) 쪽도 위/왼쪽 여백을 좁힌다. 상단바 고정 높이만큼은 남겨야 겹치지 않는다.
-        ".block-container { padding-top:46px !important; padding-left:1.4rem !important; "
+        # 사이드바 위쪽 여백과 정확히 같은 값(31px)을 줘야 두 제목이 같은 선상에 놓인다.
+        ".block-container { padding-top:31px !important; padding-left:1.4rem !important; "
         "padding-right:1.4rem !important; }"
     )
 
