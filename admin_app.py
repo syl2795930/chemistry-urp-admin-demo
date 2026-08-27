@@ -377,7 +377,7 @@ def page_admin():
             else:
                 view = view.sort_values("제출일시", ascending=False)
 
-            table_cols = ["접수번호", "성명_한글", "학교명", "환산성적", "대학군", "4.3환산",
+            table_cols = ["접수번호", "성명_한글", "학교명", "전공명", "환산성적", "대학군", "4.3환산",
                           "편입_전적학교", "편입_환산성적", "편입_대학군", "편입_4.3환산",
                           "희망지도교수_1지망", "희망지도교수_2지망",
                           "기숙사사용", "서류합격여부", "서류확인_AI", "1지망선발여부"]
@@ -531,14 +531,16 @@ def page_admin():
                         st.session_state["doc_check_pdf_b64"],
                         label=f"📄 {name_shown} 서류 PDF 새 탭에서 보기", key="doc_check_pdf_btn")
 
-            _ROW_WIDTHS = [0.25, 0.6, 0.55, 0.95, 0.55, 0.55, 0.55,
-                           0.85, 0.65, 0.55, 0.65,
-                           0.65, 0.65, 0.4, 0.6, 0.55, 0.65]
-            _ROW_HEADERS = ["", "접수번호", "성명", "대학", "환산성적", "대학군", "4.3환산",
+            # 전공명 칸을 새로 넣으면서, 표 전체 폭은 그대로 유지하되 기존 칸들을 다같이
+            # 조금씩 좁혀서(비율은 유지) 공간을 만들었다 — 특정 칸만 없앤 게 아니라 전부 균등하게.
+            _ROW_WIDTHS = [0.24, 0.57, 0.52, 0.90, 0.57, 0.52, 0.52, 0.52,
+                           0.80, 0.61, 0.52, 0.61,
+                           0.61, 0.61, 0.38, 0.57, 0.52, 0.61]
+            _ROW_HEADERS = ["", "접수번호", "성명", "대학", "전공", "환산성적", "대학군", "4.3환산",
                             "편입대학", "편입환산", "편입군", "편입4.3",
                             "1지망", "2지망", "기숙사", "서류상태", "AI확인", "선발여부"]
             # 칸이 좁아서 줄인 이름들은, 마우스를 올리면 원래 이름이 뜨도록 안내(title)를 같이 넣는다.
-            _ROW_HEADER_FULL = ["", "접수번호", "성명", "학교명(대학)", "환산성적", "대학군", "4.3환산",
+            _ROW_HEADER_FULL = ["", "접수번호", "성명", "학교명(대학)", "전공명", "환산성적", "대학군", "4.3환산",
                                 "편입 전 전적대학", "편입 전 환산성적", "편입 전 대학군", "편입 전 4.3환산",
                                 "1지망 교수", "2지망 교수", "기숙사 사용여부", "서류상태", "AI 서류확인", "선발여부"]
             _DOC_BADGE = {
@@ -578,29 +580,31 @@ def page_admin():
                         rc[2].markdown(f"<span style='font-size:12px;font-weight:600;'>{r['성명_한글']}</span>",
                                        unsafe_allow_html=True)
                         rc[3].markdown(f"<span style='font-size:12px;'>{r['학교명']}</span>", unsafe_allow_html=True)
-                        rc[4].markdown(f"<span style='font-size:12px;'>{r['환산성적']}</span>", unsafe_allow_html=True)
-                        rc[5].markdown(f"<span style='font-size:12px;'>{r['대학군']}</span>", unsafe_allow_html=True)
-                        rc[6].markdown(f"<span style='font-size:12px;'>{r['4.3환산']}</span>", unsafe_allow_html=True)
-                        rc[7].markdown(f"<span style='font-size:12px;'>{r['편입_전적학교'] or '-'}</span>",
+                        rc[4].markdown(f"<span style='font-size:12px;'>{r.get('전공명') or '-'}</span>",
                                        unsafe_allow_html=True)
-                        rc[8].markdown(f"<span style='font-size:12px;'>{r['편입_환산성적'] or '-'}</span>",
+                        rc[5].markdown(f"<span style='font-size:12px;'>{r['환산성적']}</span>", unsafe_allow_html=True)
+                        rc[6].markdown(f"<span style='font-size:12px;'>{r['대학군']}</span>", unsafe_allow_html=True)
+                        rc[7].markdown(f"<span style='font-size:12px;'>{r['4.3환산']}</span>", unsafe_allow_html=True)
+                        rc[8].markdown(f"<span style='font-size:12px;'>{r['편입_전적학교'] or '-'}</span>",
                                        unsafe_allow_html=True)
-                        rc[9].markdown(f"<span style='font-size:12px;'>{r['편입_대학군'] or '-'}</span>",
+                        rc[9].markdown(f"<span style='font-size:12px;'>{r['편입_환산성적'] or '-'}</span>",
                                        unsafe_allow_html=True)
-                        rc[10].markdown(f"<span style='font-size:12px;'>{r['편입_4.3환산'] or '-'}</span>",
+                        rc[10].markdown(f"<span style='font-size:12px;'>{r['편입_대학군'] or '-'}</span>",
                                         unsafe_allow_html=True)
-                        rc[11].markdown(f"<span style='font-size:12px;'>{_prof_name(r['희망지도교수_1지망'])}</span>",
+                        rc[11].markdown(f"<span style='font-size:12px;'>{r['편입_4.3환산'] or '-'}</span>",
                                         unsafe_allow_html=True)
-                        rc[12].markdown(f"<span style='font-size:12px;'>{_prof_name(r['희망지도교수_2지망'])}</span>",
+                        rc[12].markdown(f"<span style='font-size:12px;'>{_prof_name(r['희망지도교수_1지망'])}</span>",
                                         unsafe_allow_html=True)
-                        rc[13].markdown(f"<span style='font-size:12px;'>{r['기숙사사용']}</span>", unsafe_allow_html=True)
-                        with rc[14]:
+                        rc[13].markdown(f"<span style='font-size:12px;'>{_prof_name(r['희망지도교수_2지망'])}</span>",
+                                        unsafe_allow_html=True)
+                        rc[14].markdown(f"<span style='font-size:12px;'>{r['기숙사사용']}</span>", unsafe_allow_html=True)
+                        with rc[15]:
                             bg, fg = _DOC_BADGE.get(r["서류합격여부"], ("#eee", "#555"))
                             st.markdown(
                                 f'<span style="background:{bg};color:{fg};padding:2px 7px;border-radius:10px;'
                                 f'font-size:11px;font-weight:600;">{r["서류합격여부"]}</span>',
                                 unsafe_allow_html=True)
-                        with rc[15]:
+                        with rc[16]:
                             ai_bg, ai_fg, ai_label = _ai_badge(r.get("서류확인_AI"))
                             ai_hint = " ⓘ" if ai_label in ("확인필요", "미확인") else ""
                             if st.button(f"{ai_label}{ai_hint}", key=f"ai_open_{receipt}",
@@ -625,7 +629,7 @@ def page_admin():
                                 "justify-content:center !important; text-align:center !important; "
                                 "width:100% !important; margin:0 !important; font-size:11px !important; }"
                             )
-                        with rc[16]:
+                        with rc[17]:
                             options = ["", "O", "X", "대기"]
                             cur_val = r["1지망선발여부"] if r["1지망선발여부"] in options else ""
                             new_val = st.selectbox(
@@ -638,7 +642,7 @@ def page_admin():
             theme.inject_css(
                 f'.st-key-applicant_table_box {{ background:#fff;border:1px solid {config.BRAND["primary_light"]};'
                 "border-radius:10px;padding:14px 8px; }"
-                # 컬럼이 16개라 칸 사이 기본 여백도 줄여서 공간을 확보
+                # 컬럼이 17개라 칸 사이 기본 여백도 줄여서 공간을 확보
                 'div[class*="st-key-arow_"] div[data-testid="stHorizontalBlock"],'
                 'div[class*="st-key-table_header_row"] div[data-testid="stHorizontalBlock"] {'
                 "gap:0.15rem !important; }"
@@ -762,9 +766,6 @@ def page_admin():
             st.info("접수된 지원자가 없습니다.")
         else:
             st.subheader("교수님별 지원자 현황")
-            status_cols = ["접수번호", "성명_한글", "학교명", "환산성적", "대학군", "4.3환산",
-                           "편입_전적학교", "편입_환산성적", "편입_대학군", "편입_4.3환산",
-                           "기숙사사용", "서류합격여부"]
 
             def _prof_display(x) -> str:
                 """'이름 교수님(연구실명)' -> '이름 교수님'만 (연구실명만 제거, 화면 표시용)."""
@@ -788,53 +789,52 @@ def page_admin():
                         applicant_pdfs[scoring.safe_name(f"{r['성명_한글']}_증명사진_") + photo_name] = photo_bytes
                 return pdf_gen.build_zip_for_professor(applicant_pdfs)
 
-            def _quick_list_and_zip(label: str, field_col: str, pick_val: str, n: int):
-                """오른쪽 칸용 — 스크롤 안 내려도 바로 보이는 명단 + 전체 ZIP 한 번에 받기.
-                (개별 학생만 골라 받고 싶을 때를 위한 상세 표는 기존처럼 아래쪽에 따로 남겨둠)
-                왼쪽 표를 좁게 줄인 만큼 이쪽은 넓게 쓸 수 있어서, 이름/학교 정도만이 아니라
-                한눈에 볼만한 정보(환산성적·대학군·서류합격여부 등)를 좀 더 보여준다."""
+            def _pick_list_select_and_zip(label: str, field_col: str, pick_val: str, n: int):
+                """오른쪽 칸 — 명단이 여기 하나만 있으면 되도록 통합. 체크박스로 고른 사람만
+                ZIP으로 받는다(전체 선택도 버튼 하나로 가능). 예전에는 '전체 ZIP 다운로드'
+                버튼과, 아래쪽 화면 전체 폭을 쓰는 '개별로 골라서 받기' 상세 표가 따로
+                있었는데, 결국 둘 다 '명단 보고 골라서 받기'라는 같은 일이라 하나로 합쳤다."""
                 st.markdown(f"**{label}** · {n}명")
                 if n == 0:
                     st.caption("지원자 없음")
                     return
                 pv = _pv_for(field_col, pick_val)
-                mini_cols = ["성명_한글", "학교명", "환산성적", "대학군", "4.3환산", "서류합격여부"]
-                mini = pv[[c for c in mini_cols if c in pv.columns]].rename(
-                    columns={"성명_한글": "이름", "학교명": "학교"})
-                st.dataframe(mini, use_container_width=True, hide_index=True,
-                             height=min(38 + 35 * len(mini), 320))
-                zip_key = f"quick_{field_col}_{scoring.safe_name(_prof_name(pick_val))}"
-                if st.button(f"{label} 전체 ZIP 다운로드", key=f"quickzipbtn_{zip_key}", use_container_width=True):
-                    with st.spinner("구글드라이브에서 파일을 모아 병합 후 ZIP으로 묶는 중... "
-                                     "(인원이 많으면 시간이 걸릴 수 있어요)"):
-                        st.session_state["prof_zip_bytes"] = _build_zip_bytes(pv)
-                        st.session_state["prof_zip_name"] = zip_key
-                if st.session_state.get("prof_zip_bytes") and st.session_state.get("prof_zip_name") == zip_key:
-                    st.download_button(
-                        "ZIP 다운로드", st.session_state["prof_zip_bytes"],
-                        file_name=f"{zip_key}_지원서류.zip", mime="application/zip", key=f"quickzipdl_{zip_key}")
-                if st.button("개별로 골라서 받기 (상세 표)", key=f"detail_open_{zip_key}",
-                             use_container_width=True):
-                    st.session_state["prof_view_which"] = "1" if field_col.endswith("1지망") else "2"
+                zip_key = f"{field_col}_{scoring.safe_name(_prof_name(pick_val))}"
+                default_key = f"seldefault_{zip_key}"
+                gen_key = f"selgen_{zip_key}"
+                if default_key not in st.session_state:
+                    st.session_state[default_key] = True  # 처음엔 전체 선택된 상태로 시작
+                gen = st.session_state.get(gen_key, 0)
 
-            def _show_prof_list_with_zip(field_col: str, pick: str):
-                pv = _pv_for(field_col, pick)
-                st.markdown(f"**{pick} — {len(pv)}명**")
-                pick_df = pv[[c for c in status_cols if c in pv.columns]].rename(columns={
-                    "학교명": "현재 대학", "환산성적": "현재 환산성적", "대학군": "현재 대학군", "4.3환산": "현재 4.3환산",
-                    "편입_전적학교": "편입 전 대학", "편입_환산성적": "편입 환산성적",
-                    "편입_대학군": "편입 대학군", "편입_4.3환산": "편입 4.3환산", "기숙사사용": "기숙사",
-                })
-                pick_df.insert(0, "선택", True)
-                edited_pick = st.data_editor(
-                    pick_df, use_container_width=True, hide_index=True, key=f"zip_pick_{field_col}_{pick}",
-                    column_config={"선택": st.column_config.CheckboxColumn("선택")})
-                chosen = edited_pick[edited_pick["선택"]]
-                zip_key = f"{field_col}_{scoring.safe_name(_prof_name(pick))}"
-                if st.button(f"선택한 {len(chosen)}명 지원서류 ZIP 생성", disabled=chosen.empty, key=f"zipbtn_{zip_key}"):
+                bcol1, bcol2 = st.columns(2)
+                with bcol1:
+                    if st.button("전체 선택", key=f"selall_{zip_key}", use_container_width=True):
+                        st.session_state[default_key] = True
+                        st.session_state[gen_key] = gen + 1
+                        st.rerun()
+                with bcol2:
+                    if st.button("전체 해제", key=f"selnone_{zip_key}", use_container_width=True):
+                        st.session_state[default_key] = False
+                        st.session_state[gen_key] = gen + 1
+                        st.rerun()
+
+                cols_map = {"성명_한글": "이름", "학교명": "학교", "전공명": "전공",
+                            "환산성적": "환산성적", "대학군": "대학군", "4.3환산": "4.3환산",
+                            "기숙사사용": "기숙사", "서류합격여부": "서류상태"}
+                mini = pv[[c for c in cols_map if c in pv.columns]].rename(columns=cols_map)
+                mini.insert(0, "선택", st.session_state[default_key])
+                editor_key = f"pickeditor_{zip_key}_{gen}"
+                edited = st.data_editor(
+                    mini, use_container_width=True, hide_index=True,
+                    height=min(38 + 35 * len(mini), 320), key=editor_key,
+                    column_config={"선택": st.column_config.CheckboxColumn("선택", width="small")})
+                chosen_mask = edited["선택"].values
+                chosen_pv = pv[chosen_mask]
+
+                if st.button(f"선택한 {len(chosen_pv)}명 ZIP 다운로드", key=f"zipbtn_{zip_key}",
+                             disabled=chosen_pv.empty, use_container_width=True):
                     with st.spinner("구글드라이브에서 파일을 모아 병합 후 ZIP으로 묶는 중... "
                                      "(인원이 많으면 시간이 걸릴 수 있어요)"):
-                        chosen_pv = pv[pv["접수번호"].isin(chosen["접수번호"])]
                         st.session_state["prof_zip_bytes"] = _build_zip_bytes(chosen_pv)
                         st.session_state["prof_zip_name"] = zip_key
                 if st.session_state.get("prof_zip_bytes") and st.session_state.get("prof_zip_name") == zip_key:
@@ -860,21 +860,9 @@ def page_admin():
                     n1 = int((df["희망지도교수_1지망"] == pick).sum())
                     n2 = int((df["희망지도교수_2지망"] == pick).sum())
                     st.markdown(f"**{_prof_display(pick)}**")
-                    _quick_list_and_zip("1지망", "희망지도교수_1지망", pick, n1)
+                    _pick_list_select_and_zip("1지망", "희망지도교수_1지망", pick, n1)
                     st.write("")
-                    _quick_list_and_zip("2지망", "희망지도교수_2지망", pick, n2)
-
-            # 세부(개별 선택) 표는 컬럼이 12개나 돼서 폭이 좁으면 다시 스크롤이 생기므로,
-            # 위 2단 레이아웃과 별개로 화면 전체 폭을 그대로 쓴다. 오른쪽 칸의 "개별로 골라서
-            # 받기" 버튼을 눌렀을 때만 여기 펼쳐진다(평소엔 오른쪽 간단 명단+전체 ZIP으로 충분).
-            if pick:
-                which = st.session_state.get("prof_view_which")
-                if which == "1" and n1:
-                    st.write("")
-                    _show_prof_list_with_zip("희망지도교수_1지망", pick)
-                elif which == "2" and n2:
-                    st.write("")
-                    _show_prof_list_with_zip("희망지도교수_2지망", pick)
+                    _pick_list_select_and_zip("2지망", "희망지도교수_2지망", pick, n2)
 
     if nav == "데이터 관리":
         st.markdown(

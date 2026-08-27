@@ -417,8 +417,9 @@ def prof_summary_table(counts1: dict, counts2: dict, state_key: str, all_profs_l
     지원자가 1명이라도 있는 교수님만 나온다).
     화면에는 "성명"만 보여주고 "교수님" 호칭·연구실명은 뺀다(표를 최대한 좁게 유지하기 위함)
     — 다만 실제 지원자 데이터와 매칭할 때 쓰는 값은 원래 전체 문자열(호칭+연구실명 포함) 그대로다
-    (표시용과 식별용을 분리)."""
-    b = config.BRAND
+    (표시용과 식별용을 분리). 표 자체가 이제 내용만큼만 좁게 그려지는데, 흰 박스로 감싸면
+    표 폭과 박스 폭이 서로 안 맞아 여백이 들쭉날쭉해 보이는 문제가 있었다 — 그래서 박스를
+    아예 없애고, 표를 칸 안에서 가운데로 오게만 했다."""
     base = all_profs_list if all_profs_list is not None else list(set(counts1) | set(counts2))
     all_profs = sorted(base)  # 식별용(원본, "이름 교수님(연구실명)")
     if not all_profs:
@@ -448,8 +449,7 @@ def prof_summary_table(counts1: dict, counts2: dict, state_key: str, all_profs_l
         st.session_state[state_key] = all_profs[rows[0]] if rows else None
     _render(
         "<style>"
-        f'.st-key-{box_key} {{ background:#fff;border:1px solid {b["primary_light"]};'
-        f'border-left:4px solid {b["primary"]};border-radius:10px;padding:10px 12px; }}'
+        f'.st-key-{box_key} {{ display:flex !important; justify-content:center !important; }}'
         "</style>"
     )
 
