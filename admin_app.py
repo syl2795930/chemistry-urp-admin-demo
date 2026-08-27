@@ -8,6 +8,7 @@
 import io
 import base64
 import datetime
+import re
 import pandas as pd
 import streamlit as st
 
@@ -765,9 +766,56 @@ def page_admin():
                            "편입_전적학교", "편입_환산성적", "편입_대학군", "편입_4.3환산",
                            "기숙사사용", "서류합격여부"]
 
-            def _show_prof_list_with_zip(field_col: str, pick: str):
-                pv = df[df[field_col] == pick].sort_values(
+            def _prof_display(x) -> str:
+                """'이름 교수님(연구실명)' -> '이름 교수님'만 (연구실명만 제거, 화면 표시용)."""
+                return re.sub(r"\s*\([^)]*\)\s*$", "", str(x)).strip()
+
+            def _pv_for(field_col: str, pick_val: str) -> pd.DataFrame:
+                return df[df[field_col] == pick_val].sort_values(
                     ["환산성적순서", "대학군순서", "4.3환산"], ascending=[True, True, False])
+
+            def _build_zip_bytes(pv: pd.DataFrame) -> bytes:
+                applicant_pdfs = {}
+                for _, r in pv.iterrows():
+                    r = r.to_dict()
+                    merged = _build_applicant_pdf(r)
+                    fname = _pdf_filename(r)
+                    applicant_pdfs[fname] = merged
+                    photo_link = r.get("증명사진_링크", "")
+                    if photo_link:
+                        photo_bytes = gsheets.download_file_bytes_from_link(photo_link)
+                        photo_name = gsheets.get_file_name_from_link(photo_link)
+                        applicant_pdfs[scoring.safe_name(f"{r['성명_한글']}_증명사진_") + photo_name] = photo_bytes
+                return pdf_gen.build_zip_for_professor(applicant_pdfs)
+
+            def _quick_list_and_zip(label: str, field_col: str, pick_val: str, n: int):
+                """오른쪽 칸용 — 스크롤 안 내려도 바로 보이는 간단 명단 + 전체 ZIP 한 번에 받기.
+                (개별 학생만 골라 받고 싶을 때를 위한 상세 표는 기존처럼 아래쪽에 따로 남겨둠)"""
+                st.markdown(f"**{label}** · {n}명")
+                if n == 0:
+                    st.caption("지원자 없음")
+                    return
+                pv = _pv_for(field_col, pick_val)
+                mini = pv[["성명_한글", "학교명", "환산성적"]].rename(
+                    columns={"성명_한글": "이름", "학교명": "학교"})
+                st.dataframe(mini, use_container_width=True, hide_index=True,
+                             height=min(38 + 35 * len(mini), 220))
+                zip_key = f"quick_{field_col}_{scoring.safe_name(_prof_name(pick_val))}"
+                if st.button(f"{label} 전체 ZIP 다운로드", key=f"quickzipbtn_{zip_key}", use_container_width=True):
+                    with st.spinner("구글드라이브에서 파일을 모아 병합 후 ZIP으로 묶는 중... "
+                                     "(인원이 많으면 시간이 걸릴 수 있어요)"):
+                        st.session_state["prof_zip_bytes"] = _build_zip_bytes(pv)
+                        st.session_state["prof_zip_name"] = zip_key
+                if st.session_state.get("prof_zip_bytes") and st.session_state.get("prof_zip_name") == zip_key:
+                    st.download_button(
+                        "ZIP 다운로드", st.session_state["prof_zip_bytes"],
+                        file_name=f"{zip_key}_지원서류.zip", mime="application/zip", key=f"quickzipdl_{zip_key}")
+                if st.button("개별로 골라서 받기 (상세 표)", key=f"detail_open_{zip_key}",
+                             use_container_width=True):
+                    st.session_state["prof_view_which"] = "1" if field_col.endswith("1지망") else "2"
+
+            def _show_prof_list_with_zip(field_col: str, pick: str):
+                pv = _pv_for(field_col, pick)
                 st.markdown(f"**{pick} — {len(pv)}명**")
                 pick_df = pv[[c for c in status_cols if c in pv.columns]].rename(columns={
                     "학교명": "현재 대학", "환산성적": "현재 환산성적", "대학군": "현재 대학군", "4.3환산": "현재 4.3환산",
@@ -783,18 +831,8 @@ def page_admin():
                 if st.button(f"선택한 {len(chosen)}명 지원서류 ZIP 생성", disabled=chosen.empty, key=f"zipbtn_{zip_key}"):
                     with st.spinner("구글드라이브에서 파일을 모아 병합 후 ZIP으로 묶는 중... "
                                      "(인원이 많으면 시간이 걸릴 수 있어요)"):
-                        applicant_pdfs = {}
-                        for receipt in chosen["접수번호"]:
-                            r = pv[pv["접수번호"] == receipt].iloc[0]
-                            merged = _build_applicant_pdf(r.to_dict())
-                            fname = _pdf_filename(r.to_dict())
-                            applicant_pdfs[fname] = merged
-                            photo_link = r.get("증명사진_링크", "")
-                            if photo_link:
-                                photo_bytes = gsheets.download_file_bytes_from_link(photo_link)
-                                photo_name = gsheets.get_file_name_from_link(photo_link)
-                                applicant_pdfs[scoring.safe_name(f"{r['성명_한글']}_증명사진_") + photo_name] = photo_bytes
-                        st.session_state["prof_zip_bytes"] = pdf_gen.build_zip_for_professor(applicant_pdfs)
+                        chosen_pv = pv[pv["접수번호"].isin(chosen["접수번호"])]
+                        st.session_state["prof_zip_bytes"] = _build_zip_bytes(chosen_pv)
                         st.session_state["prof_zip_name"] = zip_key
                 if st.session_state.get("prof_zip_bytes") and st.session_state.get("prof_zip_name") == zip_key:
                     st.download_button(
@@ -811,26 +849,26 @@ def page_admin():
             pick = st.session_state.get("prof_row_pick")
             with col_r:
                 if not pick:
-                    st.caption("← 왼쪽 표에서 교수님을 선택하면 여기에 요약이 나와요.")
+                    st.caption("← 왼쪽 표에서 교수님을 선택하면 여기에 명단이 바로 나와요 "
+                               "(아래로 스크롤 안 해도 돼요).")
                 else:
                     n1 = int((df["희망지도교수_1지망"] == pick).sum())
                     n2 = int((df["희망지도교수_2지망"] == pick).sum())
-                    st.markdown(f"**{pick}**")
-                    st.caption(f"1지망 {n1}명 · 2지망 {n2}명")
-                    if st.button(f"1지망 목록 보기 ({n1}명)", key="view_as_1", use_container_width=True,
-                                 disabled=(n1 == 0)):
-                        st.session_state["prof_view_which"] = "1"
-                    if st.button(f"2지망 목록 보기 ({n2}명)", key="view_as_2", use_container_width=True,
-                                 disabled=(n2 == 0)):
-                        st.session_state["prof_view_which"] = "2"
+                    st.markdown(f"**{_prof_display(pick)}**")
+                    _quick_list_and_zip("1지망", "희망지도교수_1지망", pick, n1)
+                    st.write("")
+                    _quick_list_and_zip("2지망", "희망지도교수_2지망", pick, n2)
 
-            # 세부 지원자 표는 컬럼이 12개나 돼서 폭이 좁으면 다시 스크롤이 생기므로,
-            # 위 2단 레이아웃과 별개로 화면 전체 폭을 그대로 쓴다.
+            # 세부(개별 선택) 표는 컬럼이 12개나 돼서 폭이 좁으면 다시 스크롤이 생기므로,
+            # 위 2단 레이아웃과 별개로 화면 전체 폭을 그대로 쓴다. 오른쪽 칸의 "개별로 골라서
+            # 받기" 버튼을 눌렀을 때만 여기 펼쳐진다(평소엔 오른쪽 간단 명단+전체 ZIP으로 충분).
             if pick:
                 which = st.session_state.get("prof_view_which")
                 if which == "1" and n1:
+                    st.write("")
                     _show_prof_list_with_zip("희망지도교수_1지망", pick)
                 elif which == "2" and n2:
+                    st.write("")
                     _show_prof_list_with_zip("희망지도교수_2지망", pick)
 
     if nav == "데이터 관리":

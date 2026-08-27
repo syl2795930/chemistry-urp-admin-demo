@@ -414,17 +414,21 @@ def prof_summary_table(counts1: dict, counts2: dict, state_key: str, all_profs_l
     쓰는 한 뺄 수 없다 — 완전히 없애려면 커스텀 버튼으로 가야 하는데, 그건 공간을 더 쓴다는
     트레이드오프가 있어 이번엔 표 쪽으로 정리했다. 행을 누르면 그 교수님을 선택 상태로 저장한다.
     all_profs_list를 주면, 아직 지원자가 0명인 교수님도 빠짐없이 목록에 나온다 (안 주면
-    지원자가 1명이라도 있는 교수님만 나온다)."""
+    지원자가 1명이라도 있는 교수님만 나온다).
+    화면에는 "이름 교수님"까지만 보여주고 연구실명은 뺀다(교수님이 많아서 표가 넓어지는 걸
+    줄이기 위함) — 다만 실제 지원자 데이터와 매칭할 때 쓰는 값은 연구실명이 포함된 원래
+    전체 문자열 그대로다(표시용과 식별용을 분리)."""
     b = config.BRAND
     base = all_profs_list if all_profs_list is not None else list(set(counts1) | set(counts2))
-    all_profs = sorted(base)
+    all_profs = sorted(base)  # 식별용(원본, 연구실명 포함)
     if not all_profs:
         st.caption("데이터가 없어요.")
         return
+    display_names = [re.sub(r"\s*\([^)]*\)\s*$", "", p).strip() for p in all_profs]  # 표시용(연구실명 제거)
     box_key = f"pst_box_{state_key}"
     with st.container(key=box_key):
         tdf = pd.DataFrame({
-            "교수님": all_profs,
+            "교수님": display_names,
             "1지망": [int(counts1.get(p, 0)) for p in all_profs],
             "2지망": [int(counts2.get(p, 0)) for p in all_profs],
         })
@@ -434,9 +438,14 @@ def prof_summary_table(counts1: dict, counts2: dict, state_key: str, all_profs_l
         event = st.dataframe(
             tdf, use_container_width=True, hide_index=True, height=_tbl_height,
             on_select="rerun", selection_mode="single-row", key=f"prof_summary_{state_key}",
+            column_config={
+                "교수님": st.column_config.TextColumn("교수님", width="medium"),
+                "1지망": st.column_config.NumberColumn("1지망", width="small"),
+                "2지망": st.column_config.NumberColumn("2지망", width="small"),
+            },
         )
         rows = (event or {}).get("selection", {}).get("rows", [])
-        st.session_state[state_key] = tdf.iloc[rows[0]]["교수님"] if rows else None
+        st.session_state[state_key] = all_profs[rows[0]] if rows else None
     _render(
         "<style>"
         f'.st-key-{box_key} {{ background:#fff;border:1px solid {b["primary_light"]};'
