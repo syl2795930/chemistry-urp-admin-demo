@@ -157,17 +157,24 @@ def page_admin():
     with st.spinner("구글시트에서 지원자 데이터를 불러오는 중..."):
         raw_all = gsheets.read_all_df()
 
-    _NAV_ITEMS = ["📋 지원자 목록", "👥 교수님별 정리", "🗄 데이터 관리",
-                  "💬 문의 답변", "📩 소식받기 신청자"]
+    # 아이콘(이모지)마다 실제 그려지는 폭이 달라서, 이모지+글자를 그냥 한 텍스트로 이어붙이면
+    # 글자 시작 위치가 메뉴마다 제각각으로 보였다. 이모지를 st.button의 별도 icon= 인자로 뺴면
+    # Streamlit이 아이콘 칸과 글자 칸을 구조적으로 분리해서 그려주기 때문에(고정폭 아이콘 슬롯),
+    # 이모지 폭 차이와 무관하게 글자 시작 줄이 항상 맞는다 — CSS로 억지로 미세조정하는 것보다 안전함.
+    _NAV_ITEMS = ["지원자 목록", "교수님별 정리", "데이터 관리", "문의 답변", "소식받기 신청자"]
+    _NAV_ICONS = {
+        "지원자 목록": "📋", "교수님별 정리": "👥", "데이터 관리": "🗄",
+        "문의 답변": "💬", "소식받기 신청자": "📩",
+    }
     if "admin_nav" not in st.session_state:
         st.session_state["admin_nav"] = _NAV_ITEMS[0]
     nav = st.session_state["admin_nav"]
     _NAV_TITLES = {
-        "📋 지원자 목록": "지원자 목록",
-        "👥 교수님별 정리": "교수님별 정리 / ZIP",
-        "🗄 데이터 관리": "데이터 관리 (백업·삭제)",
-        "💬 문의 답변": "문의 (Q&A) 답변",
-        "📩 소식받기 신청자": "소식받기 신청자",
+        "지원자 목록": "지원자 목록",
+        "교수님별 정리": "교수님별 정리 / ZIP",
+        "데이터 관리": "데이터 관리 (백업·삭제)",
+        "문의 답변": "문의 (Q&A) 답변",
+        "소식받기 신청자": "소식받기 신청자",
     }
 
     # 회차 선택 — 예전엔 큰 드롭다운으로 늘 화면 위쪽을 차지했는데, 여러 탭에서 다 필요한
@@ -175,7 +182,7 @@ def page_admin():
     # 여기서 한 번만 계산해둔다.)
     # "전체 회차를 같이 보는 경우는 없을 것 같다"고 하여 그 옵션은 없앰. 또한 문의 답변/
     # 소식받기 신청자는 회차 구분이 없는 데이터라 회차 선택 자체를 아예 보여주지 않는다.
-    _ROUND_FREE_TABS = {"💬 문의 답변", "📩 소식받기 신청자"}
+    _ROUND_FREE_TABS = {"문의 답변", "소식받기 신청자"}
     if nav in _ROUND_FREE_TABS:
         st.header(_NAV_TITLES.get(nav, "관리자 대시보드"))
         round_pick = f"이번 회차만 ({config.PROGRAM['round_key']})"
@@ -201,7 +208,7 @@ def page_admin():
 
     total = len(df)
     doc_pass = int((df.get("서류합격여부", pd.Series(dtype=str)) == "합격").sum()) if not df.empty else 0
-    if nav == "📋 지원자 목록":
+    if nav == "지원자 목록":
         st.markdown(f"**전체 지원자**: {total}명   |   **서류합격(자동판정)**: {doc_pass}명 "
                     f"(환산성적 {scoring.PASS_CUTOFF_GRADE} 이상)")
 
@@ -212,7 +219,7 @@ def page_admin():
         with st.container(key="admin_sidebar_nav"):
             for item in _NAV_ITEMS:
                 active = st.session_state["admin_nav"] == item
-                if st.button(item, key=f"navbtn_{item}", use_container_width=True,
+                if st.button(item, icon=_NAV_ICONS[item], key=f"navbtn_{item}", use_container_width=True,
                              type=("primary" if active else "secondary")):
                     st.session_state["admin_nav"] = item
                     st.rerun()
@@ -256,15 +263,16 @@ def page_admin():
         # 배포 전에 사이드바가 펼쳐진 상태인지 한 번 확인하고 반영하는 게 안전하다.)
         '[data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] { display:none !important; }'
         # 메뉴 버튼들 — 왼쪽 정렬로 진짜 메뉴 목록처럼 보이게 한다.
-        # (button 자체뿐 아니라, Streamlit이 버튼 안에 한 번 더 넣는 정렬용 div·p까지 같이
-        # 왼쪽 정렬을 줘야 실제로 글자가 왼쪽으로 온다 — 겉의 button만 주면 안쪽은 그대로일 수 있음)
+        # (아이콘을 st.button(icon=...)로 분리한 뒤로는, 버튼 안의 모든 div에 width:100%를 주면
+        # 아이콘을 담는 div까지 걸려서 아이콘이 줄바꿈되며 글자 위로 올라가버릴 위험이 있다.
+        # 그래서 글자를 담는 stMarkdownContainer만 콕 집어서 왼쪽 정렬·전체폭을 준다.)
         '.st-key-admin_sidebar_nav div[data-testid="stButton"] { margin-bottom:6px; }'
         '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button {'
-        "text-align:left !important; justify-content:flex-start !important; "
+        "text-align:left !important; justify-content:flex-start !important; gap:8px !important; "
         "border-radius:8px !important; font-size:12.5px !important; letter-spacing:-0.2px !important; "
         "padding:8px 8px !important; }"
-        '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button div, '
-        '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button p {'
+        '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button [data-testid="stMarkdownContainer"], '
+        '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button [data-testid="stMarkdownContainer"] p {'
         "justify-content:flex-start !important; text-align:left !important; width:100% !important; }"
         f'.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button[kind="secondary"] {{'
         "background:transparent !important; border:none !important; box-shadow:none !important; "
@@ -281,7 +289,7 @@ def page_admin():
         "padding-right:1.4rem !important; }"
     )
 
-    if nav == "📋 지원자 목록":
+    if nav == "지원자 목록":
         if df.empty:
             st.info("접수된 지원자가 없습니다.")
         else:
@@ -739,7 +747,7 @@ def page_admin():
                     else:
                         st.info("바뀐 내용이 없습니다.")
 
-    if nav == "👥 교수님별 정리":
+    if nav == "교수님별 정리":
         if df.empty:
             st.info("접수된 지원자가 없습니다.")
         else:
@@ -816,7 +824,7 @@ def page_admin():
                 elif which == "2" and n2:
                     _show_prof_list_with_zip("희망지도교수_2지망", pick)
 
-    if nav == "🗄 데이터 관리":
+    if nav == "데이터 관리":
         st.markdown(
             "개인정보 보유기간은 **1년**입니다. 지난 자료는 아래 순서로 정리해주세요.\n"
             "① 백업 ZIP 다운로드 → ② 보관 → ③ 삭제 (삭제해도 드라이브 휴지통에서 30일간 복구 가능)"
@@ -880,7 +888,7 @@ def page_admin():
                         st.session_state.pop("backup_zip", None)
                         st.rerun()
 
-    if nav == "💬 문의 답변":
+    if nav == "문의 답변":
         try:
             qdf = gsheets.read_all_questions()
         except Exception:
@@ -915,7 +923,7 @@ def page_admin():
                             st.success("삭제되었습니다.")
                             st.rerun()
 
-    if nav == "📩 소식받기 신청자":
+    if nav == "소식받기 신청자":
         sub_df = gsheets.read_all_subscribers()
         if sub_df.empty:
             st.info("아직 신청자가 없습니다.")
