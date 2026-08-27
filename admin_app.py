@@ -178,33 +178,26 @@ def page_admin():
         "소식받기 신청자": "소식받기 신청자",
     }
 
-    # 회차 선택 — 예전엔 큰 드롭다운으로 늘 화면 위쪽을 차지했는데, 여러 탭에서 다 필요한
-    # 건 아니라서 제목 옆 오른쪽에 작게 두는 걸로 바꿨다. (값 자체는 여러 탭이 같이 쓰므로
-    # 여기서 한 번만 계산해둔다.)
-    # "전체 회차를 같이 보는 경우는 없을 것 같다"고 하여 그 옵션은 없앰. 또한 문의 답변/
-    # 소식받기 신청자는 회차 구분이 없는 데이터라 회차 선택 자체를 아예 보여주지 않는다.
-    _ROUND_FREE_TABS = {"문의 답변", "소식받기 신청자"}
-    if nav in _ROUND_FREE_TABS:
-        st.header(_NAV_TITLES.get(nav, "관리자 대시보드"))
-        round_pick = f"이번 회차만 ({config.PROGRAM['round_key']})"
-    else:
-        hcol_l, hcol_r = st.columns([3, 1.1])
-        with hcol_l:
-            st.header(_NAV_TITLES.get(nav, "관리자 대시보드"))
-        with hcol_r:
-            other_rounds = sorted(
-                r for r in raw_all.get("프로그램구분", pd.Series(dtype=str)).astype(str).unique()
-                if r and r != config.PROGRAM["round_key"]
-            )
-            round_options = [f"이번 회차만 ({config.PROGRAM['round_key']})"] + other_rounds
-            st.write("")
-            round_pick = st.selectbox("조회할 회차", round_options, key="round_pick",
-                                       label_visibility="collapsed")
+    # 회차 선택 — 예전엔 탭마다(지원자 목록/교수님별 정리/데이터 관리 각각) 따로 선택창이
+    # 떠서 그만큼 자리를 차지했는데, 그럴 필요 없이 사이드바 맨 위 한 곳에서만 고르면 모든
+    # 탭에 공통으로 적용되도록 통합했다. round_options는 사이드바를 그리기 전에 먼저 계산해서,
+    # 사이드바보다 먼저 나오는 지원자 수 등의 계산에도 바로 쓸 수 있게 한다.
+    other_rounds = sorted(
+        r for r in raw_all.get("프로그램구분", pd.Series(dtype=str)).astype(str).unique()
+        if r and r != config.PROGRAM["round_key"]
+    )
+    round_options = [config.PROGRAM["round_key"]] + other_rounds
+    # 위젯을 그리기 전에도 현재 선택값을 알아야(아래 total/doc_pass 계산에 필요) 세션에서
+    # 미리 읽어온다 — 실제 위젯은 사이드바 쪽에서 그린다. (혹시 세션에 남아있던 값이 더 이상
+    # 존재하지 않는 회차라면 — 예: 데이터가 바뀐 경우 — selectbox가 그 값으로 에러나지 않도록
+    # 세션 값 자체도 같이 정리해준다.)
+    if st.session_state.get("round_pick") not in round_options:
+        st.session_state["round_pick"] = config.PROGRAM["round_key"]
+    round_pick = st.session_state["round_pick"]
 
-    if round_pick.startswith("이번 회차만"):
-        raw = raw_all[raw_all["프로그램구분"].astype(str) == config.PROGRAM["round_key"]]
-    else:
-        raw = raw_all[raw_all["프로그램구분"].astype(str) == round_pick]
+    st.header(_NAV_TITLES.get(nav, "관리자 대시보드"))
+
+    raw = raw_all[raw_all["프로그램구분"].astype(str) == round_pick]
     df = _enrich(raw)
 
     total = len(df)
@@ -214,7 +207,7 @@ def page_admin():
                     f"(환산성적 {scoring.PASS_CUTOFF_GRADE} 이상)")
 
     with st.sidebar:
-        st.markdown(f"#### {config.PROGRAM['round_key']}")
+        st.selectbox("조회할 회차", round_options, key="round_pick", label_visibility="collapsed")
         st.caption(f"지원자 **{total}**명 · 합격 **{doc_pass}**명")
         st.write("")
         with st.container(key="admin_sidebar_nav"):
@@ -247,14 +240,16 @@ def page_admin():
         # 제목 위치만 옮기는 것보다 안전하다(제목과 메뉴 사이 간격이 벌어지는 부작용이 없음).
         'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div:first-child { '
         "position:relative !important; top:-33px !important; }"
-        # 제목("2027-WURF")과 캡션도 메뉴 버튼과 같은 기준(왼쪽)으로 맞춘다.
-        # (가운데 정렬은 메뉴 글자 길이가 제각각이라 시작선이 들쭉날쭉해 보여서, 왼쪽 정렬로 되돌림)
-        # 메뉴 버튼은 안쪽에 12px 패딩이 있어서 글자가 그만큼 더 안쪽에서 시작하는데,
-        # 제목/캡션은 그 여백이 없어 시작 지점이 어긋나 보였다 — 똑같이 맞춰준다.
-        f'section[data-testid="stSidebar"] h4 {{ text-align:left !important; '
-        "padding:0 0 0 8px !important; margin:0 0 6px 0 !important; "
-        f'color:{config.BRAND["primary_dark"]} !important; '
-        "font-size:1.25rem !important; line-height:1.2 !important; }"
+        # 제목("2027-WURF") 자리가 이제 고정 글자가 아니라 회차 선택창(selectbox)으로 바뀌었다.
+        # 예전 h4 제목에 줬던 스타일(진한 색·큰 글씨·왼쪽 정렬)을 그대로 이 선택창에 옮긴다.
+        # BaseWeb select 컴포넌트는 값 텍스트가 여러 겹 안쪽 div에 감싸져 있어, 아래 선발여부
+        # 드롭다운에도 이미 썼던 것과 같은 방식(내부까지 전부 지정)으로 맞춘다.
+        'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] { padding-left:4px !important; }'
+        'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] > div {'
+        "font-size:1.15rem !important; font-weight:700 !important; border:none !important; "
+        "background:transparent !important; padding-left:4px !important; min-height:auto !important; }"
+        f'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] > div * {{'
+        f'color:{config.BRAND["primary_dark"]} !important; font-weight:700 !important; }}'
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
         "white-space:nowrap; text-align:left !important; padding-left:8px !important; }"
         f'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] strong {{'
@@ -806,17 +801,16 @@ def page_admin():
                     st.session_state[default_key] = True  # 처음엔 전체 선택된 상태로 시작
                 gen = st.session_state.get(gen_key, 0)
 
-                bcol1, bcol2 = st.columns(2)
-                with bcol1:
-                    if st.button("전체 선택", key=f"selall_{zip_key}", use_container_width=True):
-                        st.session_state[default_key] = True
-                        st.session_state[gen_key] = gen + 1
-                        st.rerun()
-                with bcol2:
-                    if st.button("전체 해제", key=f"selnone_{zip_key}", use_container_width=True):
-                        st.session_state[default_key] = False
-                        st.session_state[gen_key] = gen + 1
-                        st.rerun()
+                # Streamlit의 체크박스 칸(CheckboxColumn)은 표 헤더 안에 "전체 선택" 체크를
+                # 같이 넣는 기능 자체가 없다(위젯 자체의 한계라 표 안쪽에 넣을 방법이 없음) —
+                # 그래서 표 밖에 둘 수밖에 없는데, 대신 버튼 2개 대신 체크박스 하나로 줄여서
+                # 차지하는 공간을 최소화했다.
+                default_before = st.session_state[default_key]
+                select_all = st.checkbox("전체 선택", value=default_before, key=f"selall_cb_{zip_key}")
+                if select_all != default_before:
+                    st.session_state[default_key] = select_all
+                    st.session_state[gen_key] = gen + 1
+                    st.rerun()
 
                 cols_map = {"성명_한글": "이름", "학교명": "학교", "전공명": "전공",
                             "환산성적": "환산성적", "대학군": "대학군", "4.3환산": "4.3환산",
