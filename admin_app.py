@@ -24,7 +24,7 @@ theme.inject(wide=True)
 # 크기라 여기 영향이 안 가게, admin_app.py 안에서만 덮어쓴다.
 theme.inject_css(
     "h1 { font-size:1.5rem !important; }"
-    "h2 { font-size:1.25rem !important; }"
+    "h2 { font-size:1.25rem !important; padding:0 !important; margin:0 !important; line-height:1.2 !important; }"
     "h3 { font-size:0.95rem !important; }"
     '.stApp [data-testid="stCaptionContainer"] { font-size:12px !important; }'
     '.stApp .stSelectbox label, .stApp .stTextInput label { font-size:13px !important; }'
@@ -217,16 +217,17 @@ def page_admin():
         f'border-right:1px solid #F1E1EC; '
         "width:190px !important; min-width:190px !important; max-width:190px !important; }"
         # 위쪽/왼쪽 여백을 좀 더 좁혀서 공간을 아낀다.
-        'section[data-testid="stSidebar"] > div:first-child { padding-top:28px !important; }'
+        'section[data-testid="stSidebar"] > div:first-child { padding-top:52px !important; }'
         'section[data-testid="stSidebar"] > div { padding-top:0.8rem; padding-left:0.6rem !important; '
         "padding-right:0.6rem !important; }"
         # 제목("2027-WURF")과 캡션도 메뉴 버튼과 같은 기준(왼쪽)으로 맞춘다.
         # (가운데 정렬은 메뉴 글자 길이가 제각각이라 시작선이 들쭉날쭉해 보여서, 왼쪽 정렬로 되돌림)
         # 메뉴 버튼은 안쪽에 12px 패딩이 있어서 글자가 그만큼 더 안쪽에서 시작하는데,
         # 제목/캡션은 그 여백이 없어 시작 지점이 어긋나 보였다 — 똑같이 맞춰준다.
-        f'section[data-testid="stSidebar"] h4 {{ text-align:left !important; padding-left:12px !important; '
-        f'margin-left:0 !important; margin-top:0 !important; color:{config.BRAND["primary_dark"]} !important; '
-        "font-size:1.25rem !important; line-height:1.5 !important; }"
+        f'section[data-testid="stSidebar"] h4 {{ text-align:left !important; '
+        "padding:0 0 0 12px !important; margin:0 !important; "
+        f'color:{config.BRAND["primary_dark"]} !important; '
+        "font-size:1.25rem !important; line-height:1.2 !important; }"
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
         "white-space:nowrap; text-align:left !important; padding-left:12px !important; }"
         f'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] strong {{'
@@ -255,7 +256,7 @@ def page_admin():
         f'.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button[kind="primary"] p {{'
         f'color:{config.BRAND["primary"]} !important; font-weight:700 !important; }}'
         # 본문(오른쪽) 쪽도 위/왼쪽 여백을 좁힌다. 상단바 고정 높이만큼은 남겨야 겹치지 않는다.
-        ".block-container { padding-top:50px !important; padding-left:1.4rem !important; "
+        ".block-container { padding-top:52px !important; padding-left:1.4rem !important; "
         "padding-right:1.4rem !important; }"
     )
 
