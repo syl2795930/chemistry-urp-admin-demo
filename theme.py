@@ -417,7 +417,7 @@ def prof_summary_table(counts1: dict, counts2: dict, state_key: str, all_profs_l
     지원자가 1명이라도 있는 교수님만 나온다)."""
     b = config.BRAND
     base = all_profs_list if all_profs_list is not None else list(set(counts1) | set(counts2))
-    all_profs = sorted(base, key=lambda p: -(counts1.get(p, 0) + counts2.get(p, 0)))
+    all_profs = sorted(base)
     if not all_profs:
         st.caption("데이터가 없어요.")
         return

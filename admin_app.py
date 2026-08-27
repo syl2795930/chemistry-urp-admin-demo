@@ -201,8 +201,9 @@ def page_admin():
                     f"(환산성적 {scoring.PASS_CUTOFF_GRADE} 이상)")
 
     with st.sidebar:
-        st.markdown(f"#### {config.PROGRAM['round_key']}")
-        st.caption(f"지원자 {total}명 · 합격 {doc_pass}명")
+        with st.container(key="sidebar_summary_box"):
+            st.markdown(f"#### {config.PROGRAM['round_key']}")
+            st.caption(f"지원자 **{total}**명 · 합격 **{doc_pass}**명")
         st.write("")
         with st.container(key="admin_sidebar_nav"):
             for item in _NAV_ITEMS:
@@ -217,16 +218,18 @@ def page_admin():
         f'border-right:1px solid #F1E1EC; '
         "width:190px !important; min-width:190px !important; max-width:190px !important; }"
         # 위쪽/왼쪽 여백을 좀 더 좁혀서 공간을 아낀다.
-        'section[data-testid="stSidebar"] > div:first-child { padding-top:42px !important; }'
+        'section[data-testid="stSidebar"] > div:first-child { padding-top:50px !important; }'
         'section[data-testid="stSidebar"] > div { padding-top:0.8rem; padding-left:0.6rem !important; '
         "padding-right:0.6rem !important; }"
         # 제목("2027-WURF")과 캡션도 메뉴 버튼과 같은 기준(왼쪽)으로 맞춘다.
         # (가운데 정렬은 메뉴 글자 길이가 제각각이라 시작선이 들쭉날쭉해 보여서, 왼쪽 정렬로 되돌림)
         # 메뉴 버튼은 안쪽에 12px 패딩이 있어서 글자가 그만큼 더 안쪽에서 시작하는데,
         # 제목/캡션은 그 여백이 없어 시작 지점이 어긋나 보였다 — 똑같이 맞춰준다.
-        'section[data-testid="stSidebar"] h4 { text-align:left !important; padding-left:12px !important; margin-left:0 !important; }'
+        f'.st-key-sidebar_summary_box {{ background:#fff; border:1px solid {config.BRAND["primary_light"]}; '
+        "border-radius:8px; padding:10px 12px 6px; margin-bottom:4px; }"
+        'section[data-testid="stSidebar"] h4 { text-align:left !important; padding-left:0 !important; margin-left:0 !important; }'
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
-        "white-space:nowrap; text-align:left !important; padding-left:12px !important; }"
+        "white-space:nowrap; text-align:left !important; }"
         # 이번엔 요청대로 사이드바를 고정(항상 펼침)으로 두기 위해 접기 버튼을 숨긴다.
         # (예전에 이걸 숨겼다가, 이미 접혀있던 브라우저에서 다시 펼 방법이 없어졌던 적이 있어서 —
         # 배포 전에 사이드바가 펼쳐진 상태인지 한 번 확인하고 반영하는 게 안전하다.)
@@ -251,7 +254,7 @@ def page_admin():
         f'.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button[kind="primary"] p {{'
         f'color:{config.BRAND["primary"]} !important; font-weight:700 !important; }}'
         # 본문(오른쪽) 쪽도 위/왼쪽 여백을 좁힌다. 상단바 고정 높이만큼은 남겨야 겹치지 않는다.
-        ".block-container { padding-top:56px !important; padding-left:1.4rem !important; "
+        ".block-container { padding-top:50px !important; padding-left:1.4rem !important; "
         "padding-right:1.4rem !important; }"
     )
 
