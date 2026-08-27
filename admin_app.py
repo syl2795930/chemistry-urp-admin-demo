@@ -173,23 +173,28 @@ def page_admin():
     # 회차 선택 — 예전엔 큰 드롭다운으로 늘 화면 위쪽을 차지했는데, 여러 탭에서 다 필요한
     # 건 아니라서 제목 옆 오른쪽에 작게 두는 걸로 바꿨다. (값 자체는 여러 탭이 같이 쓰므로
     # 여기서 한 번만 계산해둔다.)
-    hcol_l, hcol_r = st.columns([3, 1.1])
-    with hcol_l:
+    # "전체 회차를 같이 보는 경우는 없을 것 같다"고 하여 그 옵션은 없앰. 또한 문의 답변/
+    # 소식받기 신청자는 회차 구분이 없는 데이터라 회차 선택 자체를 아예 보여주지 않는다.
+    _ROUND_FREE_TABS = {"💬 문의 답변", "📩 소식받기 신청자"}
+    if nav in _ROUND_FREE_TABS:
         st.header(_NAV_TITLES.get(nav, "관리자 대시보드"))
-    with hcol_r:
-        other_rounds = sorted(
-            r for r in raw_all.get("프로그램구분", pd.Series(dtype=str)).astype(str).unique()
-            if r and r != config.PROGRAM["round_key"]
-        )
-        round_options = [f"이번 회차만 ({config.PROGRAM['round_key']})"] + other_rounds + ["전체 회차"]
-        st.write("")
-        round_pick = st.selectbox("조회할 회차", round_options, key="round_pick",
-                                   label_visibility="collapsed")
+        round_pick = f"이번 회차만 ({config.PROGRAM['round_key']})"
+    else:
+        hcol_l, hcol_r = st.columns([3, 1.1])
+        with hcol_l:
+            st.header(_NAV_TITLES.get(nav, "관리자 대시보드"))
+        with hcol_r:
+            other_rounds = sorted(
+                r for r in raw_all.get("프로그램구분", pd.Series(dtype=str)).astype(str).unique()
+                if r and r != config.PROGRAM["round_key"]
+            )
+            round_options = [f"이번 회차만 ({config.PROGRAM['round_key']})"] + other_rounds
+            st.write("")
+            round_pick = st.selectbox("조회할 회차", round_options, key="round_pick",
+                                       label_visibility="collapsed")
 
     if round_pick.startswith("이번 회차만"):
         raw = raw_all[raw_all["프로그램구분"].astype(str) == config.PROGRAM["round_key"]]
-    elif round_pick == "전체 회차":
-        raw = raw_all
     else:
         raw = raw_all[raw_all["프로그램구분"].astype(str) == round_pick]
     df = _enrich(raw)

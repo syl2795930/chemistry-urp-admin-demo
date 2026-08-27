@@ -14,6 +14,7 @@ from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table, Tab
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 from pypdf import PdfReader, PdfWriter
+import config
 
 # 한글 출력을 위한 내장 CID 폰트 등록 (별도 폰트파일 불필요)
 pdfmetrics.registerFont(UnicodeCIDFont("HYSMyeongJo-Medium"))
@@ -38,7 +39,13 @@ def generate_application_pdf(data: dict, photo_bytes: bytes = None, show_receipt
     center = ParagraphStyle("center_kr", parent=normal, alignment=1, wordWrap="CJK")
     right = ParagraphStyle("right_kr", parent=normal, alignment=2, wordWrap="CJK")
 
-    program_name = "2026년도 하계 우수대학원생유치프로그램 연구참여 지원서"
+    # 회차(SURF=하계/WURF=동계)와 연도를 config.py의 PROGRAM 값에서 그대로 가져와 자동으로 반영한다.
+    # (예전엔 "2026년도 하계..."로 문구가 고정되어 있어서, 회차가 바뀔 때마다 여기도 같이
+    # 손으로 고쳐야 했음 — 이제는 config.py만 바꾸면 이 표지도 자동으로 맞게 나온다.)
+    _SEASON_BY_SHORT_NAME = {"SURF": "하계", "WURF": "동계"}
+    program_year = config.PROGRAM["year"]
+    program_season = _SEASON_BY_SHORT_NAME.get(config.PROGRAM["short_name"], config.PROGRAM["short_name"])
+    program_name = f"{program_year}년도 {program_season} 우수대학원생유치프로그램 연구참여 지원서"
     story = []
 
     story.append(Paragraph(program_name, title))
@@ -157,7 +164,7 @@ def generate_application_pdf(data: dict, photo_bytes: bytes = None, show_receipt
             attachments.append(f"{n}. 기타 우수성 입증 증빙 {cnt}부(PDF)")
 
     story.append(Paragraph(
-        f"귀 대학교 {program_name.split('년도')[0]}년 하계 우수대학원생유치프로그램에 "
+        f"귀 대학교 {program_year}년 {program_season} 우수대학원생유치프로그램에 "
         "소정의 서류를 갖추어 지원합니다.", normal))
     story.append(Spacer(1, 4))
     story.append(Paragraph("붙임서류 : " + " / ".join(attachments), normal))

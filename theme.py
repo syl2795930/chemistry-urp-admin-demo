@@ -550,7 +550,9 @@ def footer():
     b = config.BRAND
     dept = config.SITE_LINKS.get("dept", "")
     grad = config.SITE_LINKS.get("grad_admission", "")
-    contact = config.PROGRAM.get("contact", "")
+    # PROGRAM에는 "contact" 키가 없어서 지금까지 이 문의처 줄이 계속 빈 채로 나가고 있었음
+    # (버그) → 실제 문의처가 들어있는 NOTICE_DETAIL["contact"]를 대신 사용하도록 수정.
+    contact = config.NOTICE_DETAIL.get("contact", "")
     html = (
         f'<hr style="margin-top:36px;border-color:{b["primary_light"]};" />'
         '<div style="text-align:center;padding:18px 0 8px;">'
