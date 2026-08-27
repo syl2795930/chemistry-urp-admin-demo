@@ -240,18 +240,20 @@ def page_admin():
         # 제목 위치만 옮기는 것보다 안전하다(제목과 메뉴 사이 간격이 벌어지는 부작용이 없음).
         'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div:first-child { '
         "position:relative !important; top:-33px !important; }"
-        # 제목("2027-WURF") 자리가 이제 고정 글자가 아니라 회차 선택창(selectbox)으로 바뀌었다.
-        # 진한 자주색 테두리 박스는 어색하다고 해서 뺐었는데, 이번엔 옅은 자주색(sidebar
-        # 배경보다 한 톤 진한, 다른 카드에도 쓰던 은은한 색) 배경 박스로 다시 구분을 줬다 —
-        # 테두리 없이 배경색만 있어서 전에 별로였다던 "칠한" 느낌보다는 차분하게 나뉘어 보인다.
-        # 메뉴 버튼(아래 primary 상태)과 같은 굵기(700)로 글씨도 맞춘다.
-        f'.st-key-round_pick_box {{ background:#F1E1EC !important; border-radius:8px !important; '
-        "padding:4px 4px !important; margin-bottom:2px !important; }"
+        # 제목("2027-WURF") 자리가 이제 회차 선택창(selectbox)이다. 이번엔 바깥 박스 전체를
+        # 옅은 자주색으로 확실히 채우고(패딩을 넉넉히 줘서 "칠해진" 느낌이 나게), 글자는 진한
+        # 자주색 볼드체로. 볼드체가 계속 안 먹혔던 이유는 Streamlit이 이 선택창의 값 텍스트에
+        # 자체 스타일을 다시 덮어씌우기 때문으로 보여서, 나머지 버튼들에서 이미 효과를 봤던
+        # "클래스를 두 번 이어붙여 우선순위를 강제로 올리는" 방식을 여기도 그대로 적용했다.
+        f'.st-key-round_pick_box.st-key-round_pick_box {{ background:{config.BRAND["primary_light"]} !important; '
+        "border-radius:8px !important; padding:10px 10px !important; margin-bottom:2px !important; }"
+        'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"], '
         'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] > div {'
-        "font-size:1.15rem !important; font-weight:700 !important; border:none !important; "
-        "background:transparent !important; padding-left:4px !important; min-height:auto !important; }"
-        f'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] > div * {{'
-        f'color:{config.BRAND["primary_dark"]} !important; font-weight:700 !important; }}'
+        "background:transparent !important; border:none !important; min-height:auto !important; }"
+        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] > div, '
+        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] > div * {{'
+        f'font-size:1.15rem !important; font-weight:700 !important; '
+        f'color:{config.BRAND["primary_dark"]} !important; }}'
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
         "white-space:nowrap; text-align:left !important; padding-left:8px !important; }"
         f'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] strong {{'
