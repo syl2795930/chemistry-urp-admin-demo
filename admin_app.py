@@ -217,9 +217,15 @@ def page_admin():
         f'border-right:1px solid #F1E1EC; '
         "width:190px !important; min-width:190px !important; max-width:190px !important; }"
         # 위쪽/왼쪽 여백을 좀 더 좁혀서 공간을 아낀다. (기존 46px의 2/3 수준인 31px로 축소)
-        'section[data-testid="stSidebar"] > div:first-child { padding-top:31px !important; }'
-        'section[data-testid="stSidebar"] > div { padding-top:0.8rem; padding-left:0.6rem !important; '
-        "padding-right:0.6rem !important; }"
+        # 그동안 여기(> div:first-child)에 준 padding-top이 화면에 안 먹혔던 진짜 이유를 찾음:
+        # Streamlit 최신 버전은 사이드바 접기버튼 자리를 비우려고 실제 안쪽 콘텐츠 div
+        # [data-testid="stSidebarUserContent"]에 자체적으로 큰 padding-top(기본 6rem 안팎)을
+        # 미리 넣어두는데, 우리가 건드린 바깥쪽 div:first-child는 그 콘텐츠 div를 감싸기만 할 뿐이라
+        # 실제 여백에는 영향이 없었음. 접기버튼을 이미 숨겼으니, 이 안쪽 콘텐츠 div의 padding-top을
+        # 직접 덮어써야 실제로 움직인다.
+        'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] { '
+        "padding-top:31px !important; padding-left:0.6rem !important; padding-right:0.6rem !important; }"
+        'section[data-testid="stSidebar"] > div:first-child { padding-top:0 !important; }'
         # 제목("2027-WURF")과 캡션도 메뉴 버튼과 같은 기준(왼쪽)으로 맞춘다.
         # (가운데 정렬은 메뉴 글자 길이가 제각각이라 시작선이 들쭉날쭉해 보여서, 왼쪽 정렬로 되돌림)
         # 메뉴 버튼은 안쪽에 12px 패딩이 있어서 글자가 그만큼 더 안쪽에서 시작하는데,
