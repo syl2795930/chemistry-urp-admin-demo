@@ -256,7 +256,7 @@ def page_admin():
         f'.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button[kind="primary"] p {{'
         f'color:{config.BRAND["primary"]} !important; font-weight:700 !important; }}'
         # 본문(오른쪽) 쪽도 위/왼쪽 여백을 좁힌다. 상단바 고정 높이만큼은 남겨야 겹치지 않는다.
-        ".block-container { padding-top:52px !important; padding-left:1.4rem !important; "
+        ".block-container { padding-top:80px !important; padding-left:1.4rem !important; "
         "padding-right:1.4rem !important; }"
     )
 
