@@ -245,7 +245,10 @@ def page_admin():
         # 구조([data-baseweb="select"])가 아니라 완전히 다른 컴포넌트(react-aria-ComboBox, 실제
         # <input> 태그로 값이 표시됨)였다 — 그동안 존재하지도 않는 엘리먼트를 계속 색칠하려던
         # 것이었다. 이번엔 실제 구조(.react-aria-ComboBox 안의 input[role="combobox"])를 그대로 지정한다.
-        f'.st-key-round_pick_box.st-key-round_pick_box {{ background:{config.BRAND["primary_light"]} !important; '
+        # 색은 브랜드의 연한 자주색(primary_light, #CCACD0)이 보라빛에 가깝다고 해서, 카드에
+        # 쓰는 진한 자주색(primary, #C81D6F)과 같은 톤(핑크빛 자주)이면서 사이드바 배경보다는
+        # 진하고 "전체 지원자" 카드보다는 옅은, 중간 톤(#F0BFDA)으로 새로 만들었다.
+        f'.st-key-round_pick_box.st-key-round_pick_box {{ background:#F0BFDA !important; '
         "border-radius:8px !important; padding:6px 6px !important; margin-bottom:2px !important; }"
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox, '
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox > div {'
