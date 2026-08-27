@@ -246,13 +246,14 @@ def page_admin():
         # 선택 가능한 요소인지 헷갈릴 수 있어 테두리로 명확히 구분되는 쪽을 택했다.
         f'.st-key-round_pick_box.st-key-round_pick_box {{ background:#fff !important; '
         f'border:1.5px solid {config.BRAND["primary_light"]} !important; '
-        "border-radius:8px !important; padding:6px 6px !important; margin-bottom:2px !important; }"
+        "border-radius:8px !important; padding:4px 4px !important; margin-bottom:2px !important; }"
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox, '
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox > div {'
         "background:transparent !important; border:none !important; box-shadow:none !important; }"
         f'.st-key-round_pick_box.st-key-round_pick_box input[role="combobox"] {{'
         f'background:transparent !important; border:none !important; box-shadow:none !important; '
-        f'color:{config.BRAND["primary_dark"]} !important; font-weight:700 !important; font-size:0.95rem !important; }}'
+        f'color:{config.BRAND["primary_dark"]} !important; font-weight:700 !important; '
+        "font-size:0.8rem !important; letter-spacing:-0.3px !important; padding:0 2px !important; }"
         '.st-key-round_pick_box.st-key-round_pick_box button {'
         "background:transparent !important; }"
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
