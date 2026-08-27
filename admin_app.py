@@ -263,17 +263,27 @@ def page_admin():
         # 배포 전에 사이드바가 펼쳐진 상태인지 한 번 확인하고 반영하는 게 안전하다.)
         '[data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] { display:none !important; }'
         # 메뉴 버튼들 — 왼쪽 정렬로 진짜 메뉴 목록처럼 보이게 한다.
-        # (아이콘을 st.button(icon=...)로 분리한 뒤로는, 버튼 안의 모든 div에 width:100%를 주면
-        # 아이콘을 담는 div까지 걸려서 아이콘이 줄바꿈되며 글자 위로 올라가버릴 위험이 있다.
-        # 그래서 글자를 담는 stMarkdownContainer만 콕 집어서 왼쪽 정렬·전체폭을 준다.)
+        # 스크린샷으로 다시 확인해보니, 아이콘+글자 그룹 전체가 버튼 안에서 "가운데 정렬"된 채로
+        # 있었음(글자가 짧은 "문의 답변"은 오른쪽으로, 긴 "교수님별 정리"는 왼쪽으로 몰려있었음) —
+        # 즉 button 자체가 아니라 그 안의 콘텐츠 묶음 div가 실제 정렬을 담당하고 있어서, button에만
+        # justify-content를 줬던 게 그 안쪽까지는 안 먹혔던 것. 이번엔 그 안쪽 div를 직접 지정해서
+        # 왼쪽 정렬로 바꾸고, 거기에 더해 아이콘 칸 자체를 고정폭(18px)으로 만들어서 이모지 폭이
+        # 제각각이어도 그 옆 글자가 항상 같은 x 위치에서 시작하도록 했다.
         '.st-key-admin_sidebar_nav div[data-testid="stButton"] { margin-bottom:6px; }'
         '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button {'
-        "text-align:left !important; justify-content:flex-start !important; gap:8px !important; "
+        "text-align:left !important; "
         "border-radius:8px !important; font-size:12.5px !important; letter-spacing:-0.2px !important; "
         "padding:8px 8px !important; }"
+        '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button > div {'
+        "display:flex !important; align-items:center !important; justify-content:flex-start !important; "
+        "gap:6px !important; width:100% !important; }"
+        '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button > div > *:first-child {'
+        "flex:0 0 18px !important; width:18px !important; max-width:18px !important; "
+        "display:inline-flex !important; justify-content:center !important; align-items:center !important; }"
         '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button [data-testid="stMarkdownContainer"], '
         '.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button [data-testid="stMarkdownContainer"] p {'
-        "justify-content:flex-start !important; text-align:left !important; width:100% !important; }"
+        "justify-content:flex-start !important; text-align:left !important; "
+        "flex:1 1 auto !important; width:100% !important; }"
         f'.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button[kind="secondary"] {{'
         "background:transparent !important; border:none !important; box-shadow:none !important; "
         f'color:#444 !important; }}'
