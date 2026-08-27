@@ -246,16 +246,18 @@ def page_admin():
         # 선택 가능한 요소인지 헷갈릴 수 있어 테두리로 명확히 구분되는 쪽을 택했다.
         f'.st-key-round_pick_box.st-key-round_pick_box {{ background:#fff !important; '
         f'border:1.5px solid {config.BRAND["primary_light"]} !important; '
-        "border-radius:8px !important; padding:4px 4px !important; margin-bottom:2px !important; }"
+        "border-radius:8px !important; padding:4px 2px 4px 6px !important; margin-bottom:2px !important; }"
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox, '
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox > div {'
         "background:transparent !important; border:none !important; box-shadow:none !important; }"
         f'.st-key-round_pick_box.st-key-round_pick_box input[role="combobox"] {{'
         f'background:transparent !important; border:none !important; box-shadow:none !important; '
         f'color:{config.BRAND["primary_dark"]} !important; font-weight:700 !important; '
-        "font-size:0.8rem !important; letter-spacing:-0.3px !important; padding:0 2px !important; }"
+        "font-size:0.92rem !important; letter-spacing:-0.3px !important; padding:0 !important; }"
+        # 드롭다운 화살표 버튼이 차지하는 폭을 최소화해서 글자 쪽에 공간을 더 준다.
         '.st-key-round_pick_box.st-key-round_pick_box button {'
-        "background:transparent !important; }"
+        "background:transparent !important; padding:0 2px !important; min-width:auto !important; "
+        "flex-shrink:0 !important; }"
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
         "white-space:nowrap; text-align:left !important; padding-left:8px !important; }"
         f'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] strong {{'
