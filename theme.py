@@ -187,10 +187,10 @@ def topbar(title: str = "POSTECH 화학과 연구참여 프로그램"):
     b = config.BRAND
     html = (
         '<div style="position:fixed;top:0;left:0;right:0;z-index:999999;'
-        'display:flex;align-items:center;gap:8px;padding:10px 20px;'
+        'display:flex;align-items:center;gap:8px;padding:6px 20px;'
         f'background:#fff;border-bottom:1px solid {b["primary_light"]};">'
-        f'<img src="data:image/png;base64,{MASCOT_B64}" style="height:30px;width:auto;" />'
-        f'<div style="font-weight:700;font-size:15px;color:{b["primary_dark"]};">{title}</div>'
+        f'<img src="data:image/png;base64,{MASCOT_B64}" style="height:22px;width:auto;" />'
+        f'<div style="font-weight:700;font-size:14px;color:{b["primary_dark"]};">{title}</div>'
         '</div>'
     )
     _render(html)
