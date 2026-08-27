@@ -225,7 +225,7 @@ def page_admin():
         # 메뉴 버튼은 안쪽에 12px 패딩이 있어서 글자가 그만큼 더 안쪽에서 시작하는데,
         # 제목/캡션은 그 여백이 없어 시작 지점이 어긋나 보였다 — 똑같이 맞춰준다.
         f'section[data-testid="stSidebar"] h4 {{ text-align:left !important; '
-        "padding:0 0 0 12px !important; margin:0 !important; "
+        "padding:0 0 0 12px !important; margin:0 0 6px 0 !important; "
         f'color:{config.BRAND["primary_dark"]} !important; '
         "font-size:1.25rem !important; line-height:1.2 !important; }"
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
@@ -256,7 +256,7 @@ def page_admin():
         f'.st-key-admin_sidebar_nav.st-key-admin_sidebar_nav button[kind="primary"] p {{'
         f'color:{config.BRAND["primary"]} !important; font-weight:700 !important; }}'
         # 본문(오른쪽) 쪽도 위/왼쪽 여백을 좁힌다. 상단바 고정 높이만큼은 남겨야 겹치지 않는다.
-        ".block-container { padding-top:80px !important; padding-left:1.4rem !important; "
+        ".block-container { padding-top:92px !important; padding-left:1.4rem !important; "
         "padding-right:1.4rem !important; }"
     )
 
