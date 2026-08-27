@@ -240,18 +240,20 @@ def page_admin():
         # 제목 위치만 옮기는 것보다 안전하다(제목과 메뉴 사이 간격이 벌어지는 부작용이 없음).
         'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div:first-child { '
         "position:relative !important; top:-33px !important; }"
-        # 제목("2027-WURF") 자리가 이제 회차 선택창(selectbox)이다. 이번엔 바깥 박스 전체를
-        # 옅은 자주색으로 확실히 채우고(패딩을 넉넉히 줘서 "칠해진" 느낌이 나게), 글자는 진한
-        # 자주색 볼드체로. 볼드체가 계속 안 먹혔던 이유는 Streamlit이 이 선택창의 값 텍스트에
-        # 자체 스타일을 다시 덮어씌우기 때문으로 보여서, 나머지 버튼들에서 이미 효과를 봤던
-        # "클래스를 두 번 이어붙여 우선순위를 강제로 올리는" 방식을 여기도 그대로 적용했다.
+        # 제목("2027-WURF") 자리가 이제 회차 선택창(selectbox)이다. 화면으로 다시 확인해보니
+        # 바깥 박스만 자주색으로 칠해지고, 정작 선택창 안쪽(흰 알약 모양)은 여전히 흰색+검은
+        # 글씨 그대로였다 — 이유는 그 흰 배경이 직계 자식(> div)이 아니라 더 안쪽에 중첩된
+        # div에 있었고, 그 규칙에 클래스 중복(우선순위 강제) 처리도 빠져있었던 것. 이번엔
+        # 안쪽의 모든 하위 요소(*)를 다 투명 배경으로 바꾸고, 모든 규칙에 클래스 중복을 적용해
+        # 우선순위를 확실히 이겼다.
         f'.st-key-round_pick_box.st-key-round_pick_box {{ background:{config.BRAND["primary_light"]} !important; '
         "border-radius:8px !important; padding:10px 10px !important; margin-bottom:2px !important; }"
-        'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"], '
-        'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] > div {'
-        "background:transparent !important; border:none !important; min-height:auto !important; }"
-        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] > div, '
-        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] > div * {{'
+        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] {{'
+        "background:transparent !important; border:none !important; box-shadow:none !important; "
+        "min-height:auto !important; }"
+        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] div {{'
+        "background:transparent !important; border:none !important; box-shadow:none !important; }"
+        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] * {{'
         f'font-size:1.15rem !important; font-weight:700 !important; '
         f'color:{config.BRAND["primary_dark"]} !important; }}'
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
