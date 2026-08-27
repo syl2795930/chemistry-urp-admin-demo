@@ -206,8 +206,7 @@ def page_admin():
     # 이미 같은 숫자가 나와서 중복이라 뺐다.
 
     with st.sidebar:
-        with st.container(key="round_pick_box"):
-            st.selectbox("조회할 회차", round_options, key="round_pick", label_visibility="collapsed")
+        st.selectbox("조회할 회차", round_options, key="round_pick", label_visibility="collapsed")
         st.caption(f"지원자 **{total}**명 · 합격 **{doc_pass}**명")
         st.write("")
         with st.container(key="admin_sidebar_nav"):
@@ -240,16 +239,14 @@ def page_admin():
         # 제목 위치만 옮기는 것보다 안전하다(제목과 메뉴 사이 간격이 벌어지는 부작용이 없음).
         'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div:first-child { '
         "position:relative !important; top:-33px !important; }"
-        # 제목("2027-WURF") 자리가 이제 고정 글자가 아니라 회차 선택창(selectbox)으로 바뀌었는데,
-        # 테두리 없이 텍스트만 있으니 뭔가 어색해 보인다는 지적이 있어서, 브랜드 색(자주색)
-        # 테두리를 두른 네모 박스로 감쌌다(다른 카드들과 톤을 맞춤). BaseWeb select 컴포넌트는
-        # 값 텍스트가 여러 겹 안쪽 div에 감싸져 있어, 아래 선발여부 드롭다운에도 이미 썼던 것과
-        # 같은 방식(내부까지 전부 지정)으로 맞춘다.
-        f'.st-key-round_pick_box {{ background:#fff !important; border:1.5px solid {config.BRAND["primary"]} !important; '
-        "border-radius:8px !important; padding:2px 6px !important; margin-bottom:2px !important; }"
+        # 제목("2027-WURF") 자리가 이제 고정 글자가 아니라 회차 선택창(selectbox)으로 바뀌었다.
+        # 색깔 있는 박스로 감싸봤더니 오히려 어색하다고 해서 박스는 없애고, 굵은 글씨로만
+        # 예전 제목 느낌을 살렸다. BaseWeb select 컴포넌트는 값 텍스트가 여러 겹 안쪽 div에
+        # 감싸져 있어, 아래 선발여부 드롭다운에도 이미 썼던 것과 같은 방식(내부까지 전부 지정)으로 맞춘다.
+        'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] { padding-left:4px !important; }'
         'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] > div {'
-        "font-size:1.05rem !important; font-weight:700 !important; border:none !important; "
-        "background:transparent !important; padding-left:2px !important; min-height:auto !important; }"
+        "font-size:1.15rem !important; font-weight:700 !important; border:none !important; "
+        "background:transparent !important; padding-left:4px !important; min-height:auto !important; }"
         f'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] > div * {{'
         f'color:{config.BRAND["primary_dark"]} !important; font-weight:700 !important; }}'
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
@@ -300,6 +297,7 @@ def page_admin():
         if df.empty:
             st.info("접수된 지원자가 없습니다.")
         else:
+            st.write("")  # 제목과 카드들 사이가 너무 붙어 보여서 살짝 띄움
             # ── 중복 지원 의심: 이메일 또는 휴대폰번호가 겹치는 지원자 ──
             dup_mask = pd.Series(False, index=df.index)
             for col in ["이메일", "휴대폰번호"]:
