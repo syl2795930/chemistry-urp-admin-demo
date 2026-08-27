@@ -217,7 +217,7 @@ def page_admin():
         f'border-right:1px solid #F1E1EC; '
         "width:190px !important; min-width:190px !important; max-width:190px !important; }"
         # 위쪽/왼쪽 여백을 좀 더 좁혀서 공간을 아낀다.
-        'section[data-testid="stSidebar"] > div:first-child { padding-top:50px !important; }'
+        'section[data-testid="stSidebar"] > div:first-child { padding-top:28px !important; }'
         'section[data-testid="stSidebar"] > div { padding-top:0.8rem; padding-left:0.6rem !important; '
         "padding-right:0.6rem !important; }"
         # 제목("2027-WURF")과 캡션도 메뉴 버튼과 같은 기준(왼쪽)으로 맞춘다.
