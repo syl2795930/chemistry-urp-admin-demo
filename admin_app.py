@@ -240,22 +240,21 @@ def page_admin():
         # 제목 위치만 옮기는 것보다 안전하다(제목과 메뉴 사이 간격이 벌어지는 부작용이 없음).
         'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div:first-child { '
         "position:relative !important; top:-33px !important; }"
-        # 제목("2027-WURF") 자리가 이제 회차 선택창(selectbox)이다. 화면으로 다시 확인해보니
-        # 바깥 박스만 자주색으로 칠해지고, 정작 선택창 안쪽(흰 알약 모양)은 여전히 흰색+검은
-        # 글씨 그대로였다 — 이유는 그 흰 배경이 직계 자식(> div)이 아니라 더 안쪽에 중첩된
-        # div에 있었고, 그 규칙에 클래스 중복(우선순위 강제) 처리도 빠져있었던 것. 이번엔
-        # 안쪽의 모든 하위 요소(*)를 다 투명 배경으로 바꾸고, 모든 규칙에 클래스 중복을 적용해
-        # 우선순위를 확실히 이겼다.
+        # 제목("2027-WURF") 자리가 이제 회차 선택창(selectbox)이다. 계속 안 먹혔던 진짜 이유를
+        # 개발자도구로 확인함: 지금 이 Streamlit 버전의 selectbox는 예전에 쓰던 BaseWeb select
+        # 구조([data-baseweb="select"])가 아니라 완전히 다른 컴포넌트(react-aria-ComboBox, 실제
+        # <input> 태그로 값이 표시됨)였다 — 그동안 존재하지도 않는 엘리먼트를 계속 색칠하려던
+        # 것이었다. 이번엔 실제 구조(.react-aria-ComboBox 안의 input[role="combobox"])를 그대로 지정한다.
         f'.st-key-round_pick_box.st-key-round_pick_box {{ background:{config.BRAND["primary_light"]} !important; '
-        "border-radius:8px !important; padding:10px 10px !important; margin-bottom:2px !important; }"
-        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] {{'
-        "background:transparent !important; border:none !important; box-shadow:none !important; "
-        "min-height:auto !important; }"
-        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] div {{'
+        "border-radius:8px !important; padding:6px 10px !important; margin-bottom:2px !important; }"
+        '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox, '
+        '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox > div {'
         "background:transparent !important; border:none !important; box-shadow:none !important; }"
-        f'.st-key-round_pick_box.st-key-round_pick_box [data-baseweb="select"] * {{'
-        f'font-size:1.15rem !important; font-weight:700 !important; '
-        f'color:{config.BRAND["primary_dark"]} !important; }}'
+        f'.st-key-round_pick_box.st-key-round_pick_box input[role="combobox"] {{'
+        f'background:transparent !important; border:none !important; box-shadow:none !important; '
+        f'color:{config.BRAND["primary_dark"]} !important; font-weight:700 !important; font-size:1.15rem !important; }}'
+        '.st-key-round_pick_box.st-key-round_pick_box button {'
+        "background:transparent !important; }"
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
         "white-space:nowrap; text-align:left !important; padding-left:8px !important; }"
         f'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] strong {{'
