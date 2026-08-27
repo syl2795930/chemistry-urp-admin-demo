@@ -789,17 +789,20 @@ def page_admin():
                 return pdf_gen.build_zip_for_professor(applicant_pdfs)
 
             def _quick_list_and_zip(label: str, field_col: str, pick_val: str, n: int):
-                """오른쪽 칸용 — 스크롤 안 내려도 바로 보이는 간단 명단 + 전체 ZIP 한 번에 받기.
-                (개별 학생만 골라 받고 싶을 때를 위한 상세 표는 기존처럼 아래쪽에 따로 남겨둠)"""
+                """오른쪽 칸용 — 스크롤 안 내려도 바로 보이는 명단 + 전체 ZIP 한 번에 받기.
+                (개별 학생만 골라 받고 싶을 때를 위한 상세 표는 기존처럼 아래쪽에 따로 남겨둠)
+                왼쪽 표를 좁게 줄인 만큼 이쪽은 넓게 쓸 수 있어서, 이름/학교 정도만이 아니라
+                한눈에 볼만한 정보(환산성적·대학군·서류합격여부 등)를 좀 더 보여준다."""
                 st.markdown(f"**{label}** · {n}명")
                 if n == 0:
                     st.caption("지원자 없음")
                     return
                 pv = _pv_for(field_col, pick_val)
-                mini = pv[["성명_한글", "학교명", "환산성적"]].rename(
+                mini_cols = ["성명_한글", "학교명", "환산성적", "대학군", "4.3환산", "서류합격여부"]
+                mini = pv[[c for c in mini_cols if c in pv.columns]].rename(
                     columns={"성명_한글": "이름", "학교명": "학교"})
                 st.dataframe(mini, use_container_width=True, hide_index=True,
-                             height=min(38 + 35 * len(mini), 220))
+                             height=min(38 + 35 * len(mini), 320))
                 zip_key = f"quick_{field_col}_{scoring.safe_name(_prof_name(pick_val))}"
                 if st.button(f"{label} 전체 ZIP 다운로드", key=f"quickzipbtn_{zip_key}", use_container_width=True):
                     with st.spinner("구글드라이브에서 파일을 모아 병합 후 ZIP으로 묶는 중... "
@@ -839,7 +842,9 @@ def page_admin():
                         "ZIP 다운로드", st.session_state["prof_zip_bytes"],
                         file_name=f"{zip_key}_지원서류.zip", mime="application/zip", key=f"zipdl_{zip_key}")
 
-            col_l, col_r = st.columns([1, 1])
+            # 왼쪽 표는 이제 성명/1지망/2지망만 있는 좁은 표라 굳이 화면 절반을 차지할 필요가
+            # 없다. 대신 오른쪽 명단 쪽에 폭을 몰아줘서 학생 정보를 더 넉넉하게 볼 수 있게 한다.
+            col_l, col_r = st.columns([1, 4])
             with col_l:
                 theme.prof_summary_table(
                     df["희망지도교수_1지망"].dropna().value_counts().to_dict(),
