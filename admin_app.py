@@ -225,7 +225,8 @@ def page_admin():
         # 메뉴 버튼은 안쪽에 12px 패딩이 있어서 글자가 그만큼 더 안쪽에서 시작하는데,
         # 제목/캡션은 그 여백이 없어 시작 지점이 어긋나 보였다 — 똑같이 맞춰준다.
         f'section[data-testid="stSidebar"] h4 {{ text-align:left !important; padding-left:12px !important; '
-        f'margin-left:0 !important; color:{config.BRAND["primary_dark"]} !important; }}'
+        f'margin-left:0 !important; margin-top:0 !important; color:{config.BRAND["primary_dark"]} !important; '
+        "font-size:1.25rem !important; line-height:1.5 !important; }"
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
         "white-space:nowrap; text-align:left !important; padding-left:12px !important; }"
         f'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] strong {{'
