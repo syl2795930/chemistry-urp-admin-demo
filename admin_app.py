@@ -246,13 +246,13 @@ def page_admin():
         # <input> 태그로 값이 표시됨)였다 — 그동안 존재하지도 않는 엘리먼트를 계속 색칠하려던
         # 것이었다. 이번엔 실제 구조(.react-aria-ComboBox 안의 input[role="combobox"])를 그대로 지정한다.
         f'.st-key-round_pick_box.st-key-round_pick_box {{ background:{config.BRAND["primary_light"]} !important; '
-        "border-radius:8px !important; padding:6px 10px !important; margin-bottom:2px !important; }"
+        "border-radius:8px !important; padding:6px 6px !important; margin-bottom:2px !important; }"
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox, '
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox > div {'
         "background:transparent !important; border:none !important; box-shadow:none !important; }"
         f'.st-key-round_pick_box.st-key-round_pick_box input[role="combobox"] {{'
         f'background:transparent !important; border:none !important; box-shadow:none !important; '
-        f'color:{config.BRAND["primary_dark"]} !important; font-weight:700 !important; font-size:1.15rem !important; }}'
+        f'color:{config.BRAND["primary_dark"]} !important; font-weight:700 !important; font-size:0.95rem !important; }}'
         '.st-key-round_pick_box.st-key-round_pick_box button {'
         "background:transparent !important; }"
         'section[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size:12px !important; '
