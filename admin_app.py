@@ -240,15 +240,12 @@ def page_admin():
         # 제목 위치만 옮기는 것보다 안전하다(제목과 메뉴 사이 간격이 벌어지는 부작용이 없음).
         'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div:first-child { '
         "position:relative !important; top:-33px !important; }"
-        # 제목("2027-WURF") 자리가 이제 회차 선택창(selectbox)이다. 계속 안 먹혔던 진짜 이유를
-        # 개발자도구로 확인함: 지금 이 Streamlit 버전의 selectbox는 예전에 쓰던 BaseWeb select
-        # 구조([data-baseweb="select"])가 아니라 완전히 다른 컴포넌트(react-aria-ComboBox, 실제
-        # <input> 태그로 값이 표시됨)였다 — 그동안 존재하지도 않는 엘리먼트를 계속 색칠하려던
-        # 것이었다. 이번엔 실제 구조(.react-aria-ComboBox 안의 input[role="combobox"])를 그대로 지정한다.
-        # 색은 브랜드의 연한 자주색(primary_light, #CCACD0)이 보라빛에 가깝다고 해서, 카드에
-        # 쓰는 진한 자주색(primary, #C81D6F)과 같은 톤(핑크빛 자주)이면서 사이드바 배경보다는
-        # 진하고 "전체 지원자" 카드보다는 옅은, 중간 톤(#F0BFDA)으로 새로 만들었다.
-        f'.st-key-round_pick_box.st-key-round_pick_box {{ background:#F0BFDA !important; '
+        # 채워진 진한 톤(#F0BFDA)이 다른 차분한 화면 톤과 비교했을 때 유난히 튄다는 의견이
+        # 있어서, 이 앱 다른 카드들(전체 지원자 카드 등)과 같은 스타일 — 흰 배경 + 옅은 자주색
+        # 테두리 — 로 바꿨다. 배경색만 살짝 진하게 하는 방법도 있었지만, 경계가 흐려서 이게
+        # 선택 가능한 요소인지 헷갈릴 수 있어 테두리로 명확히 구분되는 쪽을 택했다.
+        f'.st-key-round_pick_box.st-key-round_pick_box {{ background:#fff !important; '
+        f'border:1.5px solid {config.BRAND["primary_light"]} !important; '
         "border-radius:8px !important; padding:6px 6px !important; margin-bottom:2px !important; }"
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox, '
         '.st-key-round_pick_box.st-key-round_pick_box .react-aria-ComboBox > div {'
