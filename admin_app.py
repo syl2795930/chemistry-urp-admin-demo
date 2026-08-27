@@ -206,7 +206,8 @@ def page_admin():
     # 이미 같은 숫자가 나와서 중복이라 뺐다.
 
     with st.sidebar:
-        st.selectbox("조회할 회차", round_options, key="round_pick", label_visibility="collapsed")
+        with st.container(key="round_pick_box"):
+            st.selectbox("조회할 회차", round_options, key="round_pick", label_visibility="collapsed")
         st.caption(f"지원자 **{total}**명 · 합격 **{doc_pass}**명")
         st.write("")
         with st.container(key="admin_sidebar_nav"):
@@ -240,10 +241,12 @@ def page_admin():
         'section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div:first-child { '
         "position:relative !important; top:-33px !important; }"
         # 제목("2027-WURF") 자리가 이제 고정 글자가 아니라 회차 선택창(selectbox)으로 바뀌었다.
-        # 색깔 있는 박스로 감싸봤더니 오히려 어색하다고 해서 박스는 없애고, 굵은 글씨로만
-        # 예전 제목 느낌을 살렸다. BaseWeb select 컴포넌트는 값 텍스트가 여러 겹 안쪽 div에
-        # 감싸져 있어, 아래 선발여부 드롭다운에도 이미 썼던 것과 같은 방식(내부까지 전부 지정)으로 맞춘다.
-        'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] { padding-left:4px !important; }'
+        # 진한 자주색 테두리 박스는 어색하다고 해서 뺐었는데, 이번엔 옅은 자주색(sidebar
+        # 배경보다 한 톤 진한, 다른 카드에도 쓰던 은은한 색) 배경 박스로 다시 구분을 줬다 —
+        # 테두리 없이 배경색만 있어서 전에 별로였다던 "칠한" 느낌보다는 차분하게 나뉘어 보인다.
+        # 메뉴 버튼(아래 primary 상태)과 같은 굵기(700)로 글씨도 맞춘다.
+        f'.st-key-round_pick_box {{ background:#F1E1EC !important; border-radius:8px !important; '
+        "padding:4px 4px !important; margin-bottom:2px !important; }"
         'section[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] > div {'
         "font-size:1.15rem !important; font-weight:700 !important; border:none !important; "
         "background:transparent !important; padding-left:4px !important; min-height:auto !important; }"
