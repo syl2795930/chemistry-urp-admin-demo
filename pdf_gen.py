@@ -107,9 +107,10 @@ def generate_application_pdf(data: dict, photo_bytes: bytes = None, show_receipt
     ]))
     story.append(t)
 
-    # ── 지원동기 / 관심분야 / 대학원진학 / 연락처 / 기숙사 ──
+    # ── 지원동기 / 관심분야 / 영어성적 / 대학원진학 / 연락처 / 기숙사 ──
     extra_data = [
         [p("관심분야"), p(data.get("관심분야")), p("대학원 진학\n희망여부"), p(data.get("대학원진학희망"))],
+        [p("영어 성적"), Paragraph(str(data.get("영어성적") or "-"), small), "", ""],
         [p("지원동기"), Paragraph(str(data.get("지원동기", "-")).replace("\n", "<br/>"), small), "", ""],
         [p("연락처"), Paragraph(f"휴대폰: {data.get('휴대폰번호','-')}<br/>E-mail: {data.get('이메일','-')}", normal),
          p("기숙사\n사용여부"), p(data.get("기숙사사용"))],
@@ -117,13 +118,14 @@ def generate_application_pdf(data: dict, photo_bytes: bytes = None, show_receipt
     t2 = Table(extra_data, colWidths=[26 * mm, 84 * mm, 30 * mm, 40 * mm])
     t2.setStyle(TableStyle([
         ("SPAN", (1, 1), (3, 1)),
+        ("SPAN", (1, 2), (3, 2)),
         ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("FONTNAME", (0, 0), (-1, -1), FONT),
         ("FONTSIZE", (0, 0), (-1, -1), 9),
         ("BACKGROUND", (0, 0), (0, -1), colors.whitesmoke),
         ("BACKGROUND", (2, 0), (2, 0), colors.whitesmoke),
-        ("BACKGROUND", (2, 2), (2, 2), colors.whitesmoke),
+        ("BACKGROUND", (2, 3), (2, 3), colors.whitesmoke),
     ]))
     story.append(t2)
     story.append(Spacer(1, 10))
@@ -133,8 +135,8 @@ def generate_application_pdf(data: dict, photo_bytes: bytes = None, show_receipt
     consent_data = [
         [p("수집하는 개인정보"), p("수집목적"), p("보유기간")],
         [Paragraph("성명, 생년월일, 성별, 휴대전화번호, 이메일주소, 희망지도교수, 학사 학교명·전공명·학년 학기·"
-                   "기준평점·평점(편입생의 경우 전적학교 정보 포함), 자기소개 및 지원동기, 생활관 사용 여부, "
-                   "증명사진, 성적증명서·재학증명서·기타 증빙 서류", small),
+                   "기준평점·평점(편입생의 경우 전적학교 정보 포함), 영어 성적, 자기소개 및 지원동기, "
+                   "생활관 사용 여부, 증명사진, 성적증명서·재학증명서·기타 증빙 서류", small),
          p("연구참여\n프로그램 운영"), p("1년")],
     ]
     t3 = Table(consent_data, colWidths=[112 * mm, 34 * mm, 34 * mm])

@@ -19,6 +19,8 @@ LABS = {
         {"name": "최희철", "lab": "나노재료화학 연구실", "url": "https://www.nmrl.postech.ac.kr/"},
         {"name": "이인수", "lab": "나노입자재료 연구실", "url": "http://npml.postech.ac.kr"},
         {"name": "서대하", "lab": "시스템 나노의학 및 세포 이미징 연구실", "url": "http://small.postech.ac.kr"},
+        # 2026년 신임 조교수. 연구실명은 아직 안내받지 못해 빈 칸으로 둠(추후 확정되면 채우면 됨).
+        {"name": "김희찬", "lab": "", "url": "https://www.chemheechan.com/"},
     ],
     "물리화학": [
         {"name": "주태하", "lab": "극초고속 동력학 연구실", "url": "http://femto.postech.ac.kr"},
@@ -26,6 +28,8 @@ LABS = {
         {"name": "심지훈", "lab": "재료설계 이론 연구실", "url": "http://dmft.postech.ac.kr"},
         {"name": "류순민", "lab": "나노물질 분광학 연구실", "url": "http://sunryu.postech.ac.kr/"},
         {"name": "김경환", "lab": "X-선 회절 및 분광학 연구실", "url": "https://www.xlcr.postech.ac.kr/"},
+        # 2026년 신임 조교수. 연구실명은 아직 안내받지 못해 빈 칸으로 둠(추후 확정되면 채우면 됨).
+        {"name": "박영욱", "lab": "", "url": "https://sites.google.com/view/ssmclab-temp"},
     ],
     "분석화학": [
         {"name": "서종철", "lab": "분자집합체 구조화학 연구실", "url": "http://scimms.postech.ac.kr"},
@@ -41,14 +45,20 @@ LABS = {
         {"name": "권도훈", "lab": "구조생화학 연구실", "url": "https://kwonlab.postech.ac.kr/home"},
     ],
 }
-PROFESSORS = sorted([f"{p['name']} 교수님({p['lab']})" for labs in LABS.values() for p in labs])
+def _prof_label(p: dict) -> str:
+    """'이름 교수님(연구실명)' 형태로 표시용 문자열을 만든다. 아직 연구실명을 안내받지 못한
+    신임교원은 lab이 빈 문자열이므로, 그 경우 빈 괄호 "()"가 남지 않도록 괄호 자체를 뺀다."""
+    return f"{p['name']} 교수님({p['lab']})" if p.get("lab") else f"{p['name']} 교수님"
+
+
+PROFESSORS = sorted([_prof_label(p) for labs in LABS.values() for p in labs])
 
 # 분야(유기화학/무기화학/...)별로 묶고, 각 분야 안에서는 이름 가나다순으로 정렬한 선택 목록.
 # 분야 제목 줄("── 유기화학 ──")은 실제로 고를 수 없는 구분선 역할만 한다 (is_group_header로 구분).
 PROFESSORS_GROUPED = []
 for _field in sorted(LABS.keys()):
     PROFESSORS_GROUPED.append(f"── {_field} ──")
-    PROFESSORS_GROUPED.extend(sorted(f"{p['name']} 교수님({p['lab']})" for p in LABS[_field]))
+    PROFESSORS_GROUPED.extend(sorted(_prof_label(p) for p in LABS[_field]))
 
 
 def is_group_header(x) -> bool:

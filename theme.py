@@ -417,9 +417,9 @@ def prof_summary_table(counts1: dict, counts2: dict, state_key: str, all_profs_l
     지원자가 1명이라도 있는 교수님만 나온다).
     화면에는 "성명"만 보여주고 "교수님" 호칭·연구실명은 뺀다(표를 최대한 좁게 유지하기 위함)
     — 다만 실제 지원자 데이터와 매칭할 때 쓰는 값은 원래 전체 문자열(호칭+연구실명 포함) 그대로다
-    (표시용과 식별용을 분리). 표 자체가 이제 내용만큼만 좁게 그려지는데, 흰 박스로 감싸면
-    표 폭과 박스 폭이 서로 안 맞아 여백이 들쭉날쭉해 보이는 문제가 있었다 — 그래서 박스를
-    아예 없애고, 표를 칸 안에서 가운데로 오게만 했다."""
+    (표시용과 식별용을 분리). use_container_width=False만으로는 위젯 바깥 틀이 여전히 넓게
+    잡혀서 오른쪽 여백이 남길래, width를 성명·1지망·2지망 세 칸에 맞춘 고정 픽셀값으로
+    직접 지정해서 틀 자체를 좁혔다."""
     base = all_profs_list if all_profs_list is not None else list(set(counts1) | set(counts2))
     all_profs = sorted(base)  # 식별용(원본, "이름 교수님(연구실명)")
     if not all_profs:
@@ -437,7 +437,7 @@ def prof_summary_table(counts1: dict, counts2: dict, state_key: str, all_profs_l
         # 행 수에 맞춰 높이를 계산해서 전부 한 번에 보이게 한다.
         _tbl_height = 38 + 35 * len(all_profs) + 3
         event = st.dataframe(
-            tdf, use_container_width=False, hide_index=True, height=_tbl_height,
+            tdf, width=220, hide_index=True, height=_tbl_height,
             on_select="rerun", selection_mode="single-row", key=f"prof_summary_{state_key}",
             column_config={
                 "성명": st.column_config.TextColumn("성명", width="small"),
@@ -585,7 +585,9 @@ def labs_grid(labs_dict):
             f'<a href="{lab["url"]}" target="_blank" rel="noreferrer" style="display:block;background:#fff;'
             'border:1px solid #E7D6E2;border-radius:8px;padding:12px 14px;text-decoration:none;color:inherit;">'
             f'<div style="font-size:13px;font-weight:600;color:#222;">{lab["name"]} 교수님</div>'
-            f'<div style="font-size:12px;color:#666;margin:3px 0 6px;">{lab["lab"]}</div>'
+            # 신임교원은 연구실명을 아직 안내받지 못해 lab이 빈 문자열일 수 있다 — 그 경우
+            # 줄이 그냥 비어 보이지 않도록 안내 문구를 대신 넣는다.
+            f'<div style="font-size:12px;color:#666;margin:3px 0 6px;">{lab["lab"] or "연구실명 추후 안내 예정"}</div>'
             f'<div style="font-size:12px;color:{b["primary"]};">홈페이지 방문 →</div>'
             '</a>'
             for lab in labs

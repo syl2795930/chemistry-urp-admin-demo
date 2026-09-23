@@ -724,6 +724,7 @@ def page_admin():
                                                index=["O", "X"].index(r_one["기숙사사용"])
                                                if r_one.get("기숙사사용") in ["O", "X"] else None)
                         e_email = st.text_input("이메일", value=r_one.get("이메일", ""))
+                        e_english = st.text_input("영어 성적", value=r_one.get("영어성적", ""))
                     e_motivation = st.text_area("자기소개 및 지원동기", value=r_one.get("지원동기", ""), height=140)
                     c_save, c_cancel = st.columns(2)
                     with c_save:
@@ -742,6 +743,7 @@ def page_admin():
                         ("학교명", e_school), ("전공명", e_major), ("입학연월", e_admit_ym),
                         ("만점기준", e_scale), ("평점", e_gpa), ("휴대폰번호", e_phone),
                         ("이메일", e_email), ("기숙사사용", e_dorm), ("지원동기", e_motivation),
+                        ("영어성적", e_english),
                     ]:
                         if str(new_val) != str(r_one.get(field, "")):
                             updates[field] = new_val
