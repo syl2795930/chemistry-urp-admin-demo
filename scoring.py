@@ -19,8 +19,8 @@ LABS = {
         {"name": "최희철", "lab": "나노재료화학 연구실", "url": "https://www.nmrl.postech.ac.kr/"},
         {"name": "이인수", "lab": "나노입자재료 연구실", "url": "http://npml.postech.ac.kr"},
         {"name": "서대하", "lab": "시스템 나노의학 및 세포 이미징 연구실", "url": "http://small.postech.ac.kr"},
-        # 2026년 신임 조교수. 연구실명은 아직 안내받지 못해 빈 칸으로 둠(추후 확정되면 채우면 됨).
-        {"name": "김희찬", "lab": "", "url": "https://www.chemheechan.com/"},
+        # 2026년 신임 조교수.
+        {"name": "김희찬", "lab": "기능성분자합성연구실", "url": "https://www.chemheechan.com/"},
     ],
     "물리화학": [
         {"name": "주태하", "lab": "극초고속 동력학 연구실", "url": "http://femto.postech.ac.kr"},
@@ -28,8 +28,8 @@ LABS = {
         {"name": "심지훈", "lab": "재료설계 이론 연구실", "url": "http://dmft.postech.ac.kr"},
         {"name": "류순민", "lab": "나노물질 분광학 연구실", "url": "http://sunryu.postech.ac.kr/"},
         {"name": "김경환", "lab": "X-선 회절 및 분광학 연구실", "url": "https://www.xlcr.postech.ac.kr/"},
-        # 2026년 신임 조교수. 연구실명은 아직 안내받지 못해 빈 칸으로 둠(추후 확정되면 채우면 됨).
-        {"name": "박영욱", "lab": "", "url": "https://sites.google.com/view/ssmclab-temp"},
+        # 2026년 신임 조교수
+        {"name": "박영욱", "lab": "단분자표면화학 연구실", "url": "https://sites.google.com/view/ssmclab-temp"},
     ],
     "분석화학": [
         {"name": "서종철", "lab": "분자집합체 구조화학 연구실", "url": "http://scimms.postech.ac.kr"},

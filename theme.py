@@ -357,7 +357,10 @@ def notice_detail_card(program, detail):
         ("장소", detail["place"]),
         ("특전", detail["benefit"]),
         ("신청방법", detail["how_to_apply"]),
-        ("신청기한", program["deadline"]),
+        # 모집공고 표의 "신청기한"에는 마감 시각 뒤에 "까지"를 붙여서 문장으로 자연스럽게 읽히게
+        # 한다(다른 곳 — 상단 요약 카드, 지원서 작성 화면 안내 등 — 에서는 "접수마감: OOO"처럼
+        # 라벨이 이미 "까지"의 의미를 담고 있어서 그대로 두고, 여기 표에서만 붙인다).
+        ("신청기한", f'{program["deadline"]}까지'),
         ("발표", program["announce"]),
         ("문의처", detail["contact"]),
         ("기타사항", detail["note"]),
@@ -437,7 +440,7 @@ def prof_summary_table(counts1: dict, counts2: dict, state_key: str, all_profs_l
         # 행 수에 맞춰 높이를 계산해서 전부 한 번에 보이게 한다.
         _tbl_height = 38 + 35 * len(all_profs) + 3
         event = st.dataframe(
-            tdf, width=220, hide_index=True, height=_tbl_height,
+            tdf, width=280, hide_index=True, height=_tbl_height,
             on_select="rerun", selection_mode="single-row", key=f"prof_summary_{state_key}",
             column_config={
                 "성명": st.column_config.TextColumn("성명", width="small"),
@@ -536,7 +539,6 @@ def program_history_table(past_programs):
         '<tr style="border-bottom:1px solid #F1DFEC;">'
         f'<td style="padding:10px 14px;font-weight:600;">{p["name"]}</td>'
         f'<td style="padding:10px 14px;color:#555;">{p["period"]}</td>'
-        f'<td style="padding:10px 14px;color:#555;">{p["count"]}</td>'
         '</tr>'
         for p in past_programs
     )
@@ -547,7 +549,6 @@ def program_history_table(past_programs):
         '<thead><tr style="background:#F8EEF5;text-align:left;">'
         '<th style="padding:10px 14px;font-weight:600;color:#555;border-bottom:1px solid #E7D6E2;">회차</th>'
         '<th style="padding:10px 14px;font-weight:600;color:#555;border-bottom:1px solid #E7D6E2;">참여 기간</th>'
-        '<th style="padding:10px 14px;font-weight:600;color:#555;border-bottom:1px solid #E7D6E2;">참여 인원</th>'
         '</tr></thead>'
         f'<tbody>{rows}</tbody>'
         '</table></div>'
@@ -580,7 +581,9 @@ def labs_grid(labs_dict):
     st.caption("지원 전에 관심 있는 연구실 홈페이지를 미리 둘러보실 수 있어요. 카드를 클릭하면 새 탭에서 열립니다.")
     sections = []
     for field in sorted(labs_dict.keys()):
-        labs = labs_dict[field]
+        # 분야(필드) 순서는 이미 가나다순(sorted)인데, 그 안의 교수님 카드들은 LABS에 적어둔
+        # 순서 그대로라 가나다순이 아니었다 — 여기도 이름 기준으로 정렬해서 통일한다.
+        labs = sorted(labs_dict[field], key=lambda p: p["name"])
         cards = "".join(
             f'<a href="{lab["url"]}" target="_blank" rel="noreferrer" style="display:block;background:#fff;'
             'border:1px solid #E7D6E2;border-radius:8px;padding:12px 14px;text-decoration:none;color:inherit;">'
