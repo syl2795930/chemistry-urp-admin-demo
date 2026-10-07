@@ -27,6 +27,9 @@ theme.inject_css(
     "h1 { font-size:1.5rem !important; }"
     "h2 { font-size:1.25rem !important; padding:0 !important; margin:0 !important; line-height:1.2 !important; }"
     "h3 { font-size:0.95rem !important; }"
+    # 위의 h2 규칙(여백 0)이 팝업창(st.dialog) 제목에도 적용돼서 제목이 창 맨 위 모서리에 붙어
+    # 잘려 보이던 문제 — 팝업창 안의 제목만 원래 여백을 다시 준다.
+    'section[role="dialog"] h2 { padding:1.5rem 3rem 0.5rem 1.5rem !important; line-height:1.4 !important; }'
     '.stApp [data-testid="stCaptionContainer"] { font-size:12px !important; }'
     '.stApp .stSelectbox label, .stApp .stTextInput label { font-size:13px !important; }'
 )
